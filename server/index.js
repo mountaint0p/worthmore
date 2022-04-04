@@ -14,49 +14,26 @@ app.listen(5000, () => {
 
 app.get("/items", async (req, res) => {
 	try {
-		const allItems = await pool.query("SELECT * FROM item");
-		res.json(allItems.rows);
-	} catch (err) {
-		console.log(err.message);
-	}
-});
-
-app.get("/items/alphabetically", async (req, res) => {
-	try {
-		const allItems = await pool.query("SELECT * FROM item ORDER BY item_name");
-		res.json(allItems.rows);
-	} catch (err) {
-		console.log(err.message);
-	}
-});
-
-app.get("/items/latest", async (req, res) => {
-	try {
-		const allItems = await pool.query(
-			"SELECT * FROM item ORDER BY date_added DESC"
-		);
-		res.json(allItems.rows);
-	} catch (err) {
-		console.log(err.message);
-	}
-});
-
-app.get("/items/oldest", async (req, res) => {
-	try {
+		//request allItems and allTags
 		const allItems = await pool.query("SELECT * FROM item ORDER BY date_added");
-		res.json(allItems.rows);
-	} catch (err) {
-		console.log(err.message);
-	}
-});
-
-app.get("/items/search/:word", async (req, res) => {
-	try {
-		const { word } = req.params;
-		const allItems = await pool.query(
-			"SELECT * FROM item WHERE item_name ILIKE $1",
-			["%" + word + "%"]
+		const allTags = await pool.query(
+			"SELECT i.id, t.tag_name FROM item AS i JOIN item_tag AS it on it.item_id = i.id JOIN tag AS t ON t.id = it.tag_id"
 		);
+		//group tags by item id in taglist
+		let tagList = {};
+		allTags.rows.forEach((tag) => {
+			if (!(tag.id in tagList)) {
+				tagList[tag.id] = [tag.tag_name];
+			} else {
+				tagList[tag.id].push(tag.tag_name);
+			}
+		});
+		//add tags to each item
+		allItems.rows.forEach((item) => {
+			if (item.id in tagList) {
+				item.tags = tagList[item.id];
+			} else item.tags = [];
+		});
 		res.json(allItems.rows);
 	} catch (err) {
 		console.log(err.message);
@@ -65,16 +42,44 @@ app.get("/items/search/:word", async (req, res) => {
 
 app.get("/items/filter", async (req, res) => {
 	try {
-		let sort;
-		if (req.query.sort === "latest") sort = "date_added DESC";
-		else if (req.query.sort === "oldest") sort = "date_added";
-		else if (req.query.sort === "alphabetical") sort = "item_name";
-		console.log("Search results");
-		console.log(sort);
-		console.log(req.query.search);
+		const searchTerm =
+			typeof req.query.search !== "undefined" ? req.query.search : "";
+		let tagQuery = "";
+		if (typeof req.query.tags == "string") {
+			tagQuery = `AND t.tag_name = '${req.query.tags}'`;
+		} else if (Array.isArray(req.query.tags)) {
+			tagQuery = `AND (t.tag_name = '${req.query.tags[0]}'`;
+			for (let i = 1; i < req.query.tags.length; i++) {
+				tagQuery += ` OR t.tag_name = '${req.query.tags[i]}'`;
+			}
+			tagQuery += ")";
+		}
+		let sort = "";
+		if (req.query.sort === "latest") sort = "ORDER BY i.date_added DESC";
+		else if (req.query.sort === "oldest") sort = "ORDER BY i.date_added";
+		else if (req.query.sort === "alphabetical") sort = "ORDER BY i.item_name";
 		const allItems = await pool.query(
-			`SELECT * FROM item WHERE item_name ILIKE '%${req.query.search}%' ORDER BY ${sort}`
+			`SELECT DISTINCT(i.item_name), i.image_url, i.date_added, i.id, i.on_hold FROM item AS i 
+			JOIN item_tag AS it on it.item_id = i.id JOIN tag AS t ON t.id = it.tag_id
+			WHERE item_name ILIKE '%${searchTerm}%' ${tagQuery} ${sort}`
 		);
+		const allTags = await pool.query(
+			`SELECT i.id, t.tag_name FROM item AS i JOIN item_tag AS it on it.item_id = i.id JOIN tag AS t ON t.id = it.tag_id`
+		);
+		let tagList = {};
+		allTags.rows.forEach((tag) => {
+			if (!(tag.id in tagList)) {
+				tagList[tag.id] = [tag.tag_name];
+			} else {
+				tagList[tag.id].push(tag.tag_name);
+			}
+		});
+		//add tags to each item
+		allItems.rows.forEach((item) => {
+			if (item.id in tagList) {
+				item.tags = tagList[item.id];
+			} else item.tags = [];
+		});
 		res.json(allItems.rows);
 	} catch (err) {
 		console.log(err.message);

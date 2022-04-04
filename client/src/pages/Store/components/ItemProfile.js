@@ -29,11 +29,11 @@ function StoreItem({ item }) {
 			<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
 				{item.item_name}
 			</Box>
-			{/* <Wrap>
+			<Wrap>
 				{item.tags.map((tag) => {
 					return <Badge> {tag} </Badge>;
 				})}
-			</Wrap>*/}
+			</Wrap>
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>

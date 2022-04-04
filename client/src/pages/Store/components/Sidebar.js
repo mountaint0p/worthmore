@@ -24,9 +24,11 @@ import {
 	AccordionIcon,
 	Flex,
 	FormControl,
+	useCheckboxGroup,
 } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
 import { AiOutlineSearch } from "react-icons/ai";
+import { useState } from "react";
 
 export default function SidebarWithHeader({
 	children,
@@ -79,14 +81,17 @@ const SortingFilter = ({ values, setFieldValue }) => {
 					id="sorting"
 					name="sorting"
 					defaultValue="latest"
-					onChange={(value) => {
-						values.sorting = value;
-					}}
 				>
 					<Stack direction="column">
-						<Radio value="latest">Date: Latest</Radio>
-						<Radio value="oldest">Date: Oldest</Radio>
-						<Radio value="alphabetical">Alphabetically</Radio>
+						<Field value="latest" as={Radio}>
+							Date: Latest
+						</Field>
+						<Field value="oldest" as={Radio}>
+							Date: Oldest
+						</Field>
+						<Field value="alphabetical" as={Radio}>
+							Alphabetically
+						</Field>
 					</Stack>
 				</RadioGroup>
 			</AccordionPanel>
@@ -98,11 +103,15 @@ const SidebarContent = (
 	{ setLoading, setItemList, paginate },
 	{ onClose, ...rest }
 ) => {
-	const getSearch = async (sort, search) => {
+	const getSearch = async (sort, search, tags) => {
 		try {
+			let tagQuery = "";
+			tags.forEach((tag) => {
+				tagQuery += `&tags=${tag}`;
+			});
 			setLoading(true);
 			const response = await fetch(
-				`http://localhost:5000/items/filter?sort=${sort}&search=${search}`
+				`http://localhost:5000/items/filter?sort=${sort}&search=${search}${tagQuery}`
 			);
 			const jsonData = await response.json();
 			setItemList(jsonData);
@@ -114,6 +123,17 @@ const SidebarContent = (
 	};
 
 	const searchBarColor = useColorModeValue("gray.100", "gray.700");
+	const SearchBar = () => {
+		return (
+			<Input
+				bgColor={searchBarColor}
+				borderRadius="2xl"
+				width="90%"
+				height="35px"
+				placeholder="Search Worthmore by Name"
+			/>
+		);
+	};
 	return (
 		<Box
 			bg={useColorModeValue("white", "gray.900")}
@@ -129,12 +149,14 @@ const SidebarContent = (
 			</Heading>
 			<Formik
 				initialValues={{
-					sorting: "none",
+					sorting: "latest",
 					search: "",
+					tags: [],
 				}}
 				onSubmit={(values, actions) => {
 					paginate(1);
-					getSearch(values.sorting, values.search);
+					getSearch(values.sorting, values.search, values.tags);
+					// getSearch(values.sorting, values.search);
 				}}
 			>
 				{({ values, setFieldValue, handleChange }) => (
@@ -153,7 +175,7 @@ const SidebarContent = (
 								value={values.search || ""}
 								onChange={handleChange}
 								placeholder="Search Worthmore by Name"
-							></Input>
+							/>
 						</InputGroup>
 						<Accordion mt="20px" allowMultiple>
 							<SortingFilter values={values} handChange={setFieldValue} />
@@ -164,14 +186,30 @@ const SidebarContent = (
 									</Box>
 									<AccordionIcon />
 								</AccordionButton>
-
 								<AccordionPanel pb={4}>
-									<CheckboxGroup colorScheme="green">
+									<CheckboxGroup defaultValue={[]} colorScheme="green">
 										<VStack align="left">
-											<Checkbox value="decoration">Decoration</Checkbox>
-											<Checkbox value="lighting">Lighting</Checkbox>
-											<Checkbox value="tools">Tools</Checkbox>
-											<Checkbox value="supplies">Supplies</Checkbox>
+											<Field name="tags" value="decoration" as={Checkbox}>
+												Decoration
+											</Field>
+											<Field name="tags" value="lighting" as={Checkbox}>
+												Lighting
+											</Field>
+											<Field name="tags" value="utility" as={Checkbox}>
+												Utility
+											</Field>
+											<Field name="tags" value="mirrors" as={Checkbox}>
+												Mirrors
+											</Field>
+											<Field name="tags" value="fans" as={Checkbox}>
+												Fans
+											</Field>
+											<Field name="tags" value="supplies" as={Checkbox}>
+												Supplies
+											</Field>
+											<Field name="tags" value="supplies" as={Checkbox}>
+												Supplies
+											</Field>
 										</VStack>
 									</CheckboxGroup>
 								</AccordionPanel>

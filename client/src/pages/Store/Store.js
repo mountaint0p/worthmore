@@ -1,5 +1,4 @@
 import { Wrap, ColorModeScript, Text } from "@chakra-ui/react";
-import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Pagination from "./components/Pagination";
 import React, { useEffect, useState } from "react";
@@ -8,7 +7,7 @@ import ItemDisplay from "./components/ItemDisplay.js";
 function Store() {
 	const [currentPage, setCurrentPage] = React.useState(1);
 	const [loading, setLoading] = useState(false);
-	const itemPerPage = 2;
+	const itemPerPage = 6;
 	let [itemList, setItemList] = useState([]);
 
 	//get currentItemList
