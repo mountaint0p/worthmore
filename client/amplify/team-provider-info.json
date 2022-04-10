@@ -1,0 +1,21 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-worthmore-dev-192500-authRole",
+      "UnauthRoleArn": "arn:aws:iam::072039516081:role/amplify-worthmore-dev-192500-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::072039516081:role/amplify-worthmore-dev-192500-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-worthmore-dev-192500-deployment",
+      "UnauthRoleName": "amplify-worthmore-dev-192500-unauthRole",
+      "StackName": "amplify-worthmore-dev-192500",
+      "StackId": "arn:aws:cloudformation:us-east-1:072039516081:stack/amplify-worthmore-dev-192500/48be3610-b85c-11ec-be74-0e248cb066a7",
+      "AmplifyAppId": "d3a5wzxm3izc3v"
+    },
+    "categories": {
+      "auth": {
+        "worthmore6b96679d": {},
+        "true": {}
+      }
+    }
+  }
+}

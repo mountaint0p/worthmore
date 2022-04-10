@@ -19,6 +19,8 @@ import {
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { Link as RouterLink } from "react-router-dom";
 import LightModeButton from "./LightModeButton";
+import { Auth } from "aws-amplify";
+import React from "react";
 
 /*
 const NavLink = ({ children }) => (
@@ -37,8 +39,29 @@ const NavLink = ({ children }) => (
 	</Link>
 );
 */
-
-export default function Navbar() {
+const LoginControl = ({ user, setUser }) => {
+	if (user === null) {
+		return (
+			<MenuItem onClick={() => Auth.federatedSignIn({ provider: "Google" })}>
+				Sign In
+			</MenuItem>
+		);
+	} else {
+		return <MenuItem onClick={() => Auth.signOut()}>Sign Out</MenuItem>;
+	}
+};
+export default function Navbar({ user, setUser }) {
+	React.useEffect(() => {
+		const updateUser = async () => {
+			try {
+				let newUser = await Auth.currentAuthenticatedUser();
+				setUser(newUser);
+			} catch {
+				setUser(null);
+			}
+		};
+		updateUser();
+	}, []);
 	return (
 		<>
 			<Box
@@ -119,16 +142,17 @@ export default function Navbar() {
 							>
 								<Avatar
 									size={"sm"}
-									src={
-										"https://lh3.googleusercontent.com/fife/AAWUweXZUqcjSYcPNNFAiwr0QKnRCeAILM1fyQJN69dfMc2lo24i7Db-4aZKnbxNkSna9QZJJvYMWwN2qHnFVG6TL3wKVq9UdxDvIoprCQTkjKtpftwHpfokVZlXDqNigNDodYSwcIg1DwB4b5vteEtNYz_5YtmKR3BIXdoDy4M-e_nyy6Cpr43q4219_vfkX0dpPvP88_XAxqrj9ZZBsDPcJwoQou1Mx5YsIflWnamPkiuYMVv8ruS6ALo93tS5ZJEOj2JLI5iiNayNnJbcsNvU7mt3ZomqaVv7oZIkmN72s7XZf2OoLbyWE1mKDNsITbQVttyMONsflClgbSbRKlAkKoW1u9WjZDp1sEwl63iTWA6C2-BimgVJ_3fZawbCypZ3a7pPbPPnIANbzW4eUBCbV65YV3h_B8q0dEiB0-go5e2HBoET4-os_K6QOkM79H5r68hUVlko5e16q8crLaDM3GYey_ufeM_wcIRd3qHMDynkUyH1pWo0f_6oVHHiEnVzdgrUNy_KQjRbvdfkhdmUNapuYYzTMY41gWyD5kcBwppFT69P9yJDd0CR2cOLKTWSez_MEBKWCY7JwLV5E4sG2lPguOCLsFCOQQa68gCbsOvGL9uUhzLKtuCJtQOByWfTH2plnQ_aJxHZQHhRRRNV280IDylUClQfMTm-Aad72FFT5yL8ChrxQDIlf9sWQaqD8mbIHmyrYqaszYPSDdwkKfp0NNgvqoL-8Vo-IQcjuDRDT54=s64-c"
-									}
+									src={user === null ? "" : user.attributes.picture}
 								/>
 							</MenuButton>
 							<MenuList>
 								<MenuItem>Account Details</MenuItem>
 								<MenuItem>Items on Hold</MenuItem>
+								<Link as={RouterLink} to="/itemupload">
+									<MenuItem>Upload Item</MenuItem>
+								</Link>
 								<MenuDivider />
-								<MenuItem>Log Out</MenuItem>
+								<LoginControl user={user} />
 							</MenuList>
 						</Menu>
 					</Flex>

@@ -1,0 +1,16 @@
+{
+  "resourceName": "worthmoreimagebucket",
+  "policyUUID": "b188b5bb",
+  "bucketName": "worthmore5ba9e5f5174f41528ad43aee2c52559a",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

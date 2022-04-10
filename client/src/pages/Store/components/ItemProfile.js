@@ -24,6 +24,7 @@ function StoreItem({ item }) {
 			bgColor={useColorModeValue("white", "gray.900")}
 			_hover={{ cursor: "pointer", boxShadow: "lg" }}
 			tabIndex="0"
+			key={item.id}
 		>
 			<Image boxSize="200px" src={item.image_url} alt={item.item_name} />
 			<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
@@ -31,7 +32,7 @@ function StoreItem({ item }) {
 			</Box>
 			<Wrap>
 				{item.tags.map((tag) => {
-					return <Badge> {tag} </Badge>;
+					return <Badge key={tag}> {tag} </Badge>;
 				})}
 			</Wrap>
 			<Modal isOpen={isOpen} onClose={onClose}>

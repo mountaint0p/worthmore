@@ -1,0 +1,75 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-worthmore-dev-192500-authRole",
+      "UnauthRoleArn": "arn:aws:iam::072039516081:role/amplify-worthmore-dev-192500-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::072039516081:role/amplify-worthmore-dev-192500-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-worthmore-dev-192500-deployment",
+      "UnauthRoleName": "amplify-worthmore-dev-192500-unauthRole",
+      "StackName": "amplify-worthmore-dev-192500",
+      "StackId": "arn:aws:cloudformation:us-east-1:072039516081:stack/amplify-worthmore-dev-192500/48be3610-b85c-11ec-be74-0e248cb066a7",
+      "AmplifyAppId": "d3a5wzxm3izc3v"
+    }
+  },
+  "auth": {
+    "worthmore6b96679d": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-worthmore-dev-192500-deployment/amplify-cfn-templates/auth/worthmore6b96679d-cloudformation-template.json",
+        "logicalId": "authworthmore6b96679d"
+      },
+      "lastPushTimeStamp": "2022-04-10T20:34:19.089Z",
+      "output": {
+        "UserPoolId": "us-east-1_DpKvMnWcG",
+        "AppClientIDWeb": "4rkming0r0n906j7aqrl6l5mnf",
+        "AppClientID": "7ds4tgm86keih96l04ihm492sq",
+        "IdentityPoolId": "us-east-1:316018a9-1b20-484b-80f8-b7d9b1c79512",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:072039516081:userpool/us-east-1_DpKvMnWcG",
+        "IdentityPoolName": "worthmore6b96679d_identitypool_6b96679d__dev",
+        "UserPoolName": "worthmore6b96679d_userpool_6b96679d",
+        "HostedUIDomain": "worthmoreauth-dev",
+        "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\"],\"LogoutURLs\":[\"http://localhost:3000/\"]}"
+      },
+      "lastPushDirHash": "xuWCFuUzz18bLsJ5wHsJZMDngrM="
+    }
+  },
+  "storage": {
+    "worthmoreimagebucket": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "lastPushTimeStamp": "2022-04-10T20:34:18.976Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-worthmore-dev-192500-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storageworthmoreimagebucket"
+      },
+      "output": {
+        "BucketName": "worthmore5ba9e5f5174f41528ad43aee2c52559a192500-dev",
+        "Region": "us-east-1"
+      },
+      "lastPushDirHash": "ncsW/r54NMtIsXWQ1RJysB2Um4I="
+    }
+  }
+}

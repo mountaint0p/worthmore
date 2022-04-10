@@ -156,7 +156,6 @@ const SidebarContent = (
 				onSubmit={(values, actions) => {
 					paginate(1);
 					getSearch(values.sorting, values.search, values.tags);
-					// getSearch(values.sorting, values.search);
 				}}
 			>
 				{({ values, setFieldValue, handleChange }) => (
