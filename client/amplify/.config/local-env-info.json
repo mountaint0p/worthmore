@@ -1,5 +1,5 @@
 {
-	"projectPath": "/Users/summit/Desktop/worthmore/client",
-	"defaultEditor": "Visual Studio Code",
-	"envName": "dev"
+  "projectPath": "/Users/summit/Desktop/worthmore/client",
+  "defaultEditor": "vscode",
+  "envName": "dev"
 }

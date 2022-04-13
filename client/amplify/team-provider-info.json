@@ -15,6 +15,18 @@
       "auth": {
         "worthmore6b96679d": {},
         "true": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d3a5wzxm3izc3v",
+          "type": "cicd"
+        }
+      },
+      "function": {
+        "worthmoreFunction": {
+          "deploymentBucketName": "amplify-worthmore-dev-192500-deployment",
+          "s3Key": "amplify-builds/worthmoreFunction-4e496f577a48464e5351-build.zip"
+        }
       }
     }
   }

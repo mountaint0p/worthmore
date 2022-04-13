@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/worthmoreAPI": {
+      "name": "/worthmoreAPI",
+      "lambdaFunction": "worthmoreFunction",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

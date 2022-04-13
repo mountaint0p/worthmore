@@ -40,7 +40,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-worthmore-dev-192500-deployment/amplify-cfn-templates/auth/worthmore6b96679d-cloudformation-template.json",
         "logicalId": "authworthmore6b96679d"
       },
-      "lastPushTimeStamp": "2022-04-10T21:03:45.482Z",
+      "lastPushTimeStamp": "2022-04-13T17:40:52.875Z",
       "output": {
         "UserPoolId": "us-east-1_DpKvMnWcG",
         "AppClientIDWeb": "4rkming0r0n906j7aqrl6l5mnf",
@@ -60,7 +60,7 @@
       "service": "S3",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
-      "lastPushTimeStamp": "2022-04-10T21:03:45.752Z",
+      "lastPushTimeStamp": "2022-04-13T17:40:52.877Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-worthmore-dev-192500-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storageworthmoreimagebucket"
@@ -70,6 +70,67 @@
         "Region": "us-east-1"
       },
       "lastPushDirHash": "ncsW/r54NMtIsXWQ1RJysB2Um4I="
+    }
+  },
+  "hosting": {
+    "amplifyhosting": {
+      "service": "amplifyhosting",
+      "type": "cicd",
+      "lastPushTimeStamp": "2022-04-13T15:54:52.911Z"
+    }
+  },
+  "function": {
+    "worthmoreFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2022-04-13T17:39:13.617Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2022-04-13T17:39:14.643Z",
+      "distZipFilename": "worthmoreFunction-4e496f577a48464e5351-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-worthmore-dev-192500-deployment",
+        "s3Key": "amplify-builds/worthmoreFunction-4e496f577a48464e5351-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-worthmore-dev-192500-deployment/amplify-cfn-templates/function/worthmoreFunction-cloudformation-template.json",
+        "logicalId": "functionworthmoreFunction"
+      },
+      "lastPushTimeStamp": "2022-04-13T17:40:52.996Z",
+      "output": {
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:072039516081:function:worthmoreFunction-dev",
+        "Name": "worthmoreFunction-dev",
+        "LambdaExecutionRole": "worthmoreLambdaRole1a9713f5-dev"
+      },
+      "lastPushDirHash": "uRojMDIISMdo30wslNDa8najsiU="
+    }
+  },
+  "api": {
+    "worthmoreAPI": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "worthmoreFunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-worthmore-dev-192500-deployment/amplify-cfn-templates/api/worthmoreAPI-cloudformation-template.json",
+        "logicalId": "apiworthmoreAPI"
+      },
+      "lastPushTimeStamp": "2022-04-13T17:40:52.880Z",
+      "output": {
+        "ApiName": "worthmoreAPI",
+        "RootUrl": "https://22u3hvil1l.execute-api.us-east-1.amazonaws.com/dev",
+        "ApiId": "22u3hvil1l"
+      },
+      "lastPushDirHash": "VzcYp0Y0BEelk7lQLGm71w8Y/yo="
     }
   }
 }
