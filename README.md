@@ -1,4 +1,7 @@
-# Getting Started with Create React App
+# Github repo for Worthmore: Swarthmore College's free store. 
+
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
