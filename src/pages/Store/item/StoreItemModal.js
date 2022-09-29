@@ -6,27 +6,57 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	useDisclosure,
+	Image,
+	Button,
+	useToast,
 } from "@chakra-ui/react";
 
-function StoreItemModal() {
-	const { isOpen, onOpen, onClose } = useDisclosure();
+import { UserAuth } from "../../../context/AuthContext";
+import { database } from "../../../firebaseConfig";
+import { addDoc, updateDoc, doc, collection } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
+//NOTE: Item reservation is nested in here
+const reserveItem = async ({ item, user, navigate }) => {
+	try {
+		const itemRef = doc(database, "items", item.id);
+		await updateDoc(itemRef, {
+			onHold: true,
+			holderID: user.uid,
+		});
+		navigate("/userorders");
+	} catch (error) {
+		console.log(error);
+	}
+};
+function StoreItemModal({ isOpen, onClose, onOpen, item }) {
+	const { user } = UserAuth();
+	const navigate = useNavigate();
 	return (
 		<>
-			<Button onClick={onOpen}>Open Modal</Button>
-
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Modal Title</ModalHeader>
+					<ModalHeader>{item.title}</ModalHeader>
 					<ModalCloseButton />
-					<ModalBody>Hello</ModalBody>
-
+					<ModalBody>
+						<Image
+							onClick={onOpen}
+							boxSize="250px"
+							src={item.imageUrl}
+							alt={item.title}
+						/>
+					</ModalBody>
 					<ModalFooter>
-						<Button colorScheme="blue" mr={3} onClick={onClose}>
-							Close
-						</Button>
-						<Button variant="ghost">Secondary Action</Button>
+						{user && (
+							<Button
+								mr={3}
+								colorScheme="telegram"
+								onClick={() => reserveItem({ item, user, navigate })}
+							>
+								Reserve
+							</Button>
+						)}
 					</ModalFooter>
 				</ModalContent>
 			</Modal>

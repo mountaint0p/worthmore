@@ -4,7 +4,7 @@ import Pagination from "./Pagination";
 import React, { useEffect, useState } from "react";
 import ItemDisplay from "./item/ItemDisplay";
 import { database } from "../../firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, where, query } from "firebase/firestore";
 
 function Store() {
 	const [currentPage, setCurrentPage] = React.useState(1);
@@ -25,13 +25,17 @@ function Store() {
 	useEffect(() => {
 		setLoading(true);
 		const fetchItems = async () => {
-			const querySnapshot = await getDocs(collection(database, "items"));
+			const itemsRef = collection(database, "items");
+			const q = query(itemsRef, where("onHold", "==", false));
+			const querySnapshot = await getDocs(q);
 			const newItemList = [];
 			querySnapshot.docs.forEach((doc) => {
 				const item = doc.data();
 				item.id = doc.id;
 				newItemList.push(item);
 			});
+			//NOTE: Store manually sorts item by most recently added
+			newItemList.sort((a, b) => (a.dateAdded < b.dateAdded ? 1 : -1));
 			setOriginalItemList(newItemList);
 			setItemList(newItemList);
 		};

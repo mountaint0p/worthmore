@@ -23,23 +23,27 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik, Field } from "formik";
 import { database, storage } from "../../firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import {
+	collection,
+	addDoc,
+	Timestamp,
+	serverTimestamp,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import MessageError from "./UploadMessage";
 import { tagList } from "../../common/tagList";
 
-const uploadItem = async (itemTitle, tags, file) => {
-	const { titleError, tagError, imageError, submitSuccess } = MessageError();
+const uploadItem = async (itemTitle, tags, file, errorMessages) => {
 	if (itemTitle === "") {
-		titleError();
+		errorMessages.titleError();
 		return;
 	}
 	if (tags.length === 0) {
-		tagError();
+		errorMessages.tagError();
 		return;
 	}
 	if (file === "") {
-		imageError();
+		errorMessages.imageError();
 		return;
 	}
 	//Create file name for image
@@ -47,19 +51,28 @@ const uploadItem = async (itemTitle, tags, file) => {
 	const fileType = file.name.split(".").pop();
 	const newFileName = itemTitle.replace(/\s/g, "");
 	const fileName = newFileName + timeStamp + "." + fileType;
+	try {
+		//Upload image to cloud storage
+		const imageRef = ref(storage, `/images/${fileName}`);
+		const snapshot = await uploadBytes(imageRef, file);
+		const url = await getDownloadURL(imageRef);
+		const date = serverTimestamp();
 
-	//Upload image to cloud storage
-	const imageRef = ref(storage, `/images/${fileName}`);
-	const snapshot = await uploadBytes(imageRef);
-	const url = await getDownloadURL(imageRef);
-
-	//Upload item to firestore
-	await addDoc(collection(database, "items"), {
-		imageAlt: itemTitle,
-		title: itemTitle,
-		imageUrl: url,
-		tags: tags,
-	});
+		//Upload item to firestore
+		await addDoc(collection(database, "items"), {
+			title: itemTitle,
+			imageUrl: url,
+			tags: tags,
+			dateAdded: date,
+			onHold: false,
+			holderID: "",
+			//NOTE: dateOnHold is a default value
+			dateOnHold: date,
+		});
+		errorMessages.submitSuccess();
+	} catch (error) {
+		errorMessages.uploadError();
+	}
 };
 
 const TagSelector = () => {
@@ -195,6 +208,8 @@ const ImageSelector = ({ setFieldValue }) => {
 };
 
 export default function ItemUpload() {
+	//NOTE: This is bad practice: taking object from hook to pass to a function later.
+	const errorMessages = MessageError();
 	return (
 		<Box bg={useColorModeValue("gray.50", "inherit")} p={10} h="100vh">
 			<Stack
@@ -211,7 +226,12 @@ export default function ItemUpload() {
 						file: "",
 					}}
 					onSubmit={async (values, actions) => {
-						await uploadItem(values.itemTitle, values.tags, values.file);
+						await uploadItem(
+							values.itemTitle,
+							values.tags,
+							values.file,
+							errorMessages
+						);
 					}}
 				>
 					{({ values, setFieldValue, handleChange }) => (

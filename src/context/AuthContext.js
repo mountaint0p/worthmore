@@ -22,7 +22,11 @@ async function createNewUser(userCredential) {
 	if (additionalUserInfo.isNewUser) {
 		setDoc(
 			doc(database, "users", userCredential.user.uid),
-			{ myList: [] },
+			{
+				holds: 0,
+				name: userCredential.user.displayName,
+				email: userCredential.user.email,
+			},
 			{ merge: true }
 		);
 	}

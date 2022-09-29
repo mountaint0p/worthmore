@@ -73,9 +73,14 @@ export default function Navbar() {
 		} else {
 			return (
 				<>
-					<MenuItem>Items on Hold</MenuItem>
+					<Link as={RouterLink} to="/userorders">
+						<MenuItem>Items on Hold</MenuItem>
+					</Link>
 					<Link as={RouterLink} to="/itemupload">
 						<MenuItem>Upload Item</MenuItem>
+					</Link>
+					<Link as={RouterLink} to="/admincontrol">
+						<MenuItem>Admin Control</MenuItem>
 					</Link>
 					<MenuDivider />
 					<MenuItem onClick={() => handleLogOut()}>Sign Out</MenuItem>
@@ -97,7 +102,7 @@ export default function Navbar() {
 				zIndex={2}
 			>
 				<Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-					<Menu>
+					{/* <Menu>
 						<MenuButton
 							as={IconButton}
 							aria-label="Page Menu"
@@ -111,7 +116,7 @@ export default function Navbar() {
 								<MenuItem>Store</MenuItem>
 							</Link>
 						</MenuList>
-					</Menu>
+					</Menu> */}
 
 					<HStack spacing={8} alignItems={"center"}>
 						<Link

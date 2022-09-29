@@ -22,6 +22,13 @@ export default function UploadMessage() {
 		duration: 9000,
 		isClosable: true,
 	});
+	const uploadError = useToast({
+		title: "Upload to server failed.",
+		description: "Issue with server, refresh the page or contact team",
+		status: "error",
+		duration: 9000,
+		isClosable: true,
+	});
 	const submitSuccess = useToast({
 		title: "Submission success.",
 		description: "Yay",

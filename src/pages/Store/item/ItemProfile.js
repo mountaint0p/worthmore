@@ -1,16 +1,6 @@
 import { Box, Image, Badge, Wrap, VStack } from "@chakra-ui/react";
-import {
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
-	useDisclosure,
-	useColorModeValue,
-	Button,
-} from "@chakra-ui/react";
+import { useDisclosure, useColorModeValue } from "@chakra-ui/react";
+import StoreItemModal from "./StoreItemModal";
 function StoreItem({ item }) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	return (
@@ -27,7 +17,7 @@ function StoreItem({ item }) {
 			key={item.id}
 		>
 			<Image boxSize="200px" src={item.imageUrl} alt={item.title} />
-			<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+			<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight">
 				{item.title}
 			</Box>
 			<Wrap>
@@ -35,26 +25,12 @@ function StoreItem({ item }) {
 					return <Badge key={tag}> {tag} </Badge>;
 				})}
 			</Wrap>
-			<Modal isOpen={isOpen} onClose={onClose}>
-				<ModalOverlay />
-				<ModalContent>
-					<ModalHeader>{item.title}</ModalHeader>
-					<ModalCloseButton />
-					<ModalBody>
-						<Image
-							onClick={onOpen}
-							boxSize="250px"
-							src={item.imageUrl}
-							alt={item.title}
-						/>
-					</ModalBody>
-					<ModalFooter>
-						<Button colorScheme="blue" mr={3} onClick={onClose}>
-							Close
-						</Button>
-					</ModalFooter>
-				</ModalContent>
-			</Modal>
+			<StoreItemModal
+				isOpen={isOpen}
+				onClose={onClose}
+				onOpen={onOpen}
+				item={item}
+			/>
 		</VStack>
 	);
 }

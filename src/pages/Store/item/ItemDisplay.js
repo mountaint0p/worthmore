@@ -1,3 +1,4 @@
+//Displays items onto store page
 import React from "react";
 import { Wrap, Heading, Spinner, Flex } from "@chakra-ui/react";
 import ItemProfile from "./ItemProfile";
