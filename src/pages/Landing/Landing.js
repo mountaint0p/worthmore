@@ -50,6 +50,14 @@ function Landing() {
 						See the Store
 					</Button>
 				</Link>
+				<Box mt="20px">
+				<Text align="center" fontSize="xl">
+				Wednesday: 7 - 9 pm
+					</Text>
+					<Text align="center" fontSize="xl">
+					Saturday: 1 - 3 pm
+					</Text>
+					</Box>
 			</Flex>
 		</VStack>
 		// <VStack align="center">

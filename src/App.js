@@ -9,6 +9,7 @@ import { Route, Routes, BrowserRouter } from "react-router-dom";
 import ProtectedRoutes from "./hooks/ProtectedRoutes";
 import { UserAuth } from "./context/AuthContext";
 import AdminControl from "./pages/AdminControl/AdminControl";
+import About from "./pages/About/About";
 
 function App() {
 	const { user } = UserAuth();
@@ -19,6 +20,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Landing />} />
 					<Route path="/store" element={<Store />} />
+					<Route path="/about" element={<About />} />
 					<Route
 						path="/itemupload"
 						element={

@@ -144,6 +144,17 @@ export default function Navbar() {
 							spacing={4}
 							display={{ base: "none", md: "flex" }}
 						>
+						<Link
+								rounded="md"
+								_hover={{
+									textDecoration: "none",
+									bg: useColorModeValue("gray.200", "gray.700"),
+								}}
+								as={RouterLink}
+								to="/about"
+							>
+								<Text fontWeight={600}>About</Text>
+							</Link>
 							<Link
 								rounded="md"
 								_hover={{
