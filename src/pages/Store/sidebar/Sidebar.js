@@ -6,14 +6,10 @@ import {
 	useColorModeValue,
 	useDisclosure,
 	Center,
-	Accordion,
 	Flex,
 } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
-import Fuse from "fuse.js";
-import SortingFilter from "./searchFilter/SortingFilter";
-import NameFilter from "./searchFilter/NameFilter";
-import TagFilter from "./searchFilter/TagFilter";
+import searchIntialValues from "./searchInitialValues";
 
 export default function Sidebar({
 	children,
@@ -21,6 +17,9 @@ export default function Sidebar({
 	setItemList,
 	paginate,
 	originalItemList,
+	searchFunctions,
+	SearchFilterComponents,
+	searchInitialValues,
 }) {
 	const { isOpen, onClose } = useDisclosure();
 	return (
@@ -32,6 +31,9 @@ export default function Sidebar({
 				setItemList={setItemList}
 				paginate={paginate}
 				originalItemList={originalItemList}
+				searchFunctions={searchFunctions}
+				SearchFilterComponents={SearchFilterComponents}
+				searchInitialValues={searchInitialValues}
 			/>
 			<Flex direction="column" align="center" ml={{ base: 0, md: 80 }} p="4">
 				{children}
@@ -40,71 +42,34 @@ export default function Sidebar({
 	);
 }
 
+//Calls all search functions after submit
 const filterSubmit = (
 	values,
-	fuse,
 	originalItemList,
 	setItemList,
-	paginate
+	paginate,
+	searchFunctions
 ) => {
 	paginate(1);
-	let newItemList;
-	if (values.search.length !== 0) {
-		newItemList = fuse.search(values.search).map((search) => {
-			return search.item;
-		});
-	} else {
-		newItemList = [...originalItemList];
-	}
-	//If tags, filter items based on tags
-	if (values.tags.length !== 0) {
-		newItemList = newItemList.filter((item) => {
-			return item.tags.some((tag) => values.tags.includes(tag));
-		});
-	}
-	if (values.sorting === "alphabetical") {
-		newItemList.sort((a, b) => {
-			if (a.title > b.title) {
-				return 1;
-			} else if (a.title < b.title) {
-				return -1;
-			} else {
-				return 0;
-			}
-		});
-	} else if (values.sorting === "latest") {
-		newItemList.sort((a, b) => {
-			if (a.dateAdded < b.dateAdded) {
-				return 1;
-			} else if (a.dateAdded > b.dateAdded) {
-				return -1;
-			} else {
-				return 0;
-			}
-		});
-	} else if (values.sorting === "oldest") {
-		newItemList.sort((a, b) => {
-			if (a.dateAdded > b.dateAdded) {
-				return 1;
-			} else if (a.dateAdded < b.dateAdded) {
-				return -1;
-			} else {
-				return 0;
-			}
-		});
-	}
+	let newItemList = [...originalItemList];
+	searchFunctions.forEach((searchFunction) => {
+		newItemList = searchFunction(values, newItemList);
+	});
 	setItemList(newItemList);
 };
 
 const SidebarContent = (
-	{ setLoading, setItemList, paginate, originalItemList },
+	{
+		setLoading,
+		setItemList,
+		paginate,
+		originalItemList,
+		searchFunctions,
+		SearchFilterComponents,
+		searchInitialValues,
+	},
 	{ onClose, ...rest }
 ) => {
-	//FUSE properties
-	const fuseOptions = {
-		keys: ["title", "tags"],
-	};
-	const fuse = new Fuse(originalItemList, fuseOptions);
 	return (
 		//SIDEBAR PROPERTIES
 		<Box
@@ -121,22 +86,23 @@ const SidebarContent = (
 				Search Filters
 			</Heading>
 			<Formik
-				initialValues={{
-					sorting: "latest",
-					search: "",
-					tags: [],
-				}}
-				onSubmit={(values, actions) => {
-					filterSubmit(values, fuse, originalItemList, setItemList, paginate);
+				initialValues={searchIntialValues}
+				onSubmit={(values) => {
+					filterSubmit(
+						values,
+						originalItemList,
+						setItemList,
+						paginate,
+						searchFunctions
+					);
 				}}
 			>
-				{({ values, setFieldValue, handleChange }) => (
+				{({ values, handleChange }) => (
 					<Form>
-						<NameFilter handleChange={handleChange} values={values} />
-						<Accordion mt="20px" allowMultiple>
-							<SortingFilter values={values} handChange={setFieldValue} />
-							<TagFilter />
-						</Accordion>
+						<SearchFilterComponents
+							values={values}
+							handleChange={handleChange}
+						/>
 						<Center mt="20px">
 							<Button type="submit" colorScheme="green" pl="30px" pr="30px">
 								Search

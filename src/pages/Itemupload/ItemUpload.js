@@ -58,6 +58,7 @@ const uploadItem = async (itemTitle, tags, file, errorMessages) => {
 		const url = await getDownloadURL(imageRef);
 		const date = serverTimestamp();
 
+		//NOTE: item properties here
 		//Upload item to firestore
 		await addDoc(collection(database, "items"), {
 			title: itemTitle,
@@ -65,6 +66,8 @@ const uploadItem = async (itemTitle, tags, file, errorMessages) => {
 			tags: tags,
 			dateAdded: date,
 			onHold: false,
+			holderName: "",
+			holderEmail: "",
 			holderID: "",
 			//NOTE: dateOnHold is a default value
 			dateOnHold: date,

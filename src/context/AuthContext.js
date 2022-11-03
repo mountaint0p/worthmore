@@ -18,7 +18,6 @@ const logOut = () => {
 
 async function createNewUser(userCredential) {
 	const additionalUserInfo = getAdditionalUserInfo(userCredential);
-	console.log(additionalUserInfo.isNewUser);
 	if (additionalUserInfo.isNewUser) {
 		setDoc(
 			doc(database, "users", userCredential.user.uid),

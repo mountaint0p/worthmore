@@ -8,6 +8,8 @@ import {
 	ModalCloseButton,
 	Image,
 	Button,
+	Text,
+	VStack,
 	useToast,
 } from "@chakra-ui/react";
 
@@ -17,24 +19,20 @@ import { addDoc, updateDoc, doc, collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 //NOTE: Item reservation is nested in here
-//TODO: Need to add check that item is not onHold before reserving
 const reserveItem = async ({ item, user, navigate }) => {
 	try {
 		const itemRef = doc(database, "items", item.id);
 		await updateDoc(itemRef, {
 			onHold: true,
 			holderID: user.uid,
-			holderName: user.displayName,
-			holderEmail: user.email,
 		});
 		navigate("/userorders");
 	} catch (error) {
 		console.log(error);
 	}
 };
-function StoreItemModal({ isOpen, onClose, onOpen, item }) {
+function AdminStoreItemModal({ isOpen, onClose, onOpen, item }) {
 	const { user } = UserAuth();
-	console.log(user.email, user.displayName);
 	const navigate = useNavigate();
 	return (
 		<>
@@ -52,15 +50,21 @@ function StoreItemModal({ isOpen, onClose, onOpen, item }) {
 						/>
 					</ModalBody>
 					<ModalFooter>
-						{user && (
-							<Button
-								mr={3}
-								colorScheme="telegram"
-								onClick={() => reserveItem({ item, user, navigate })}
-							>
-								Reserve
-							</Button>
-						)}
+						<VStack>
+							<Text>Date added: {item.dateAdded.toDate().toDateString()}</Text>
+							{item.onHold && (
+								<>
+									<Text>Reserved by {item.holderName}</Text>
+									<Button
+										mr={3}
+										colorScheme="red"
+										onClick={() => reserveItem({ item, user, navigate })}
+									>
+										Remove
+									</Button>
+								</>
+							)}
+						</VStack>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
@@ -68,4 +72,4 @@ function StoreItemModal({ isOpen, onClose, onOpen, item }) {
 	);
 }
 
-export default StoreItemModal;
+export default AdminStoreItemModal;
