@@ -15,6 +15,7 @@ import { UserAuth } from "../../../context/AuthContext";
 import { database } from "../../../firebaseConfig";
 import { addDoc, updateDoc, doc, collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
 
 //NOTE: Item reservation is nested in here
 const reserveItem = async ({ item, user, navigate }) => {
@@ -29,7 +30,9 @@ const reserveItem = async ({ item, user, navigate }) => {
 		console.log(error);
 	}
 };
+
 function StoreItemModal({ isOpen, onClose, onOpen, item }) {
+	const [reserveAttempt,setReserveAttempt] = React.useState(false);
 	const { user } = UserAuth();
 	const navigate = useNavigate();
 	return (
@@ -37,27 +40,39 @@ function StoreItemModal({ isOpen, onClose, onOpen, item }) {
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>{item.title}</ModalHeader>
-					<ModalCloseButton />
-					<ModalBody>
-						<Image
-							onClick={onOpen}
-							boxSize="250px"
-							src={item.imageUrl}
-							alt={item.title}
-						/>
-					</ModalBody>
-					<ModalFooter>
-						{user && (
-							<Button
-								mr={3}
-								colorScheme="telegram"
-								onClick={() => reserveItem({ item, user, navigate })}
-							>
-								Reserve
-							</Button>
-						)}
-					</ModalFooter>
+				{reserveAttempt?
+				<><ModalHeader>{item.title}</ModalHeader><ModalCloseButton /><ModalBody>
+						</ModalBody><ModalFooter margin= "auto"min-width="300px" padding-top="0px">
+								{user && (
+									<><ModalHeader>Are you sure you want to reserve?</ModalHeader><Button
+										mr={3}
+										colorScheme="red"
+										onClick={() => reserveItem({ item, user, navigate })}
+									>
+										Reserve
+									</Button></>
+								)}
+							</ModalFooter></>
+				:
+					<><ModalHeader>{item.title}</ModalHeader><ModalCloseButton /><ModalBody>
+							<Image
+								onClick={onOpen}
+								boxSize="250px"
+								src={item.imageUrl}
+								alt={item.title} 
+								margin="auto"
+								/>
+						</ModalBody><ModalFooter margin="auto">
+								{user && (
+									<Button
+										mr={3}
+										colorScheme="telegram"
+										onClick={() => setReserveAttempt(true)}
+									>
+										Reserve
+									</Button>
+								)}
+							</ModalFooter></>}
 				</ModalContent>
 			</Modal>
 		</>
