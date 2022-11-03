@@ -46,15 +46,15 @@ function StoreItemModal({ isOpen, onClose, onOpen, item }) {
 				<ModalContent>
 				{reserveAttempt?
 				<><ModalHeader>{item.title}</ModalHeader><ModalCloseButton /><ModalBody>
-						</ModalBody><ModalFooter margin= "auto"min-width="300px" padding-top="0px">
+						</ModalBody><ModalFooter padding="0px" margin= "0px"min-width="300px">
 								{user && (
-									<><ModalHeader>Are you sure you want to reserve?</ModalHeader><Button
+									<><div><ModalHeader>Are you sure you want to reserve?</ModalHeader></div> <div><Button
 										mr={3}
 										colorScheme="red"
 										onClick={() => reserveItem({ item, user, navigate })}
 									>
 										Reserve
-									</Button></>
+									</Button></div></>
 								)}
 							</ModalFooter></>
 				:
