@@ -18,12 +18,15 @@ import { useNavigate } from "react-router-dom";
 import React, { useState } from 'react';
 
 //NOTE: Item reservation is nested in here
+//TODO: Need to add check that item is not onHold before reserving
 const reserveItem = async ({ item, user, navigate }) => {
 	try {
 		const itemRef = doc(database, "items", item.id);
 		await updateDoc(itemRef, {
 			onHold: true,
 			holderID: user.uid,
+			holderName: user.displayName,
+			holderEmail: user.email,
 		});
 		navigate("/userorders");
 	} catch (error) {
@@ -34,6 +37,7 @@ const reserveItem = async ({ item, user, navigate }) => {
 function StoreItemModal({ isOpen, onClose, onOpen, item }) {
 	const [reserveAttempt,setReserveAttempt] = React.useState(false);
 	const { user } = UserAuth();
+	console.log(user.email, user.displayName);
 	const navigate = useNavigate();
 	return (
 		<>

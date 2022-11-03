@@ -6,23 +6,23 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineSearch } from "react-icons/ai";
 
-const NameFilter = ({ values, handleChange }) => {
+const HolderFilter = ({ values, handleChange }) => {
 	const searchBarColor = useColorModeValue("gray.100", "gray.700");
 	return (
-		<InputGroup ml="10px">
+		<InputGroup ml="10px" mt="15px">
 			<InputLeftElement pointerEvents="none" children={<AiOutlineSearch />} />
 			<Input
 				bgColor={searchBarColor}
 				borderRadius="2xl"
 				width="90%"
 				height="35px"
-				name="search"
-				value={values.search || ""}
+				name="holder"
+				value={values.holder || ""}
 				onChange={handleChange}
-				placeholder="Search Items by Name"
+				placeholder="Search Items by Holder's Name"
 			/>
 		</InputGroup>
 	);
 };
 
-export default NameFilter;
+export default HolderFilter;

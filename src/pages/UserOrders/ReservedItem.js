@@ -1,13 +1,11 @@
 import {
 	Box,
 	Image,
-	Badge,
-	Wrap,
 	Button,
 	VStack,
 	useColorModeValue,
 } from "@chakra-ui/react";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { database } from "../../firebaseConfig";
 import { UserAuth } from "../../context/AuthContext";
 
@@ -19,6 +17,8 @@ function ReserveItem({ item }) {
 			await updateDoc(itemRef, {
 				onHold: false,
 				holderID: "",
+				holderName: "",
+				holderEmail: "",
 			});
 			//NOTE: Refresh after deleting reservation, might change?
 			window.location.reload();
@@ -29,7 +29,7 @@ function ReserveItem({ item }) {
 	return (
 		<VStack
 			w={{ base: "150px", md: "250px" }}
-			h="325px"
+			h="350px"
 			p="10px"
 			borderWidth="1px"
 			minWidth="200px"
@@ -44,7 +44,7 @@ function ReserveItem({ item }) {
 				{item.title}
 			</Box>
 			<Box mt="1" fontWeight="semibold" lineHeight="tight">
-				Date Reserved: {item.title}
+				Date Reserved: {item.dateAdded.toDate().toDateString()}
 			</Box>
 			<Button colorScheme="red" onClick={() => removeReservation(item, user)}>
 				Cancel

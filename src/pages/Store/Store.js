@@ -6,6 +6,16 @@ import ItemDisplay from "./item/ItemDisplay";
 import { database } from "../../firebaseConfig";
 import { collection, getDocs, where, query } from "firebase/firestore";
 
+//import all searchFunctions
+import searchName from "./sidebar/searchFunction/searchName";
+import sortItem from "./sidebar/searchFunction/sortItem";
+import searchTag from "./sidebar/searchFunction/searchTag";
+
+//import all searchFilter components
+import SearchFilterComponents from "./sidebar/SearchFilterComponents";
+
+import searchIntialValues from "./sidebar/searchInitialValues";
+
 function Store() {
 	const [currentPage, setCurrentPage] = React.useState(1);
 	const [loading, setLoading] = useState(false);
@@ -20,6 +30,9 @@ function Store() {
 	const indexOfFirstPost = indexOfLastPost - itemPerPage;
 	const currentItemList = itemList.slice(indexOfFirstPost, indexOfLastPost);
 	const paginate = (number) => setCurrentPage(number);
+
+	//create array of searchFunctions to pass into sidebar
+	const searchFunctions = [searchName, sortItem, searchTag];
 
 	//Fetches all items from firestore
 	useEffect(() => {
@@ -50,6 +63,9 @@ function Store() {
 				setLoading={setLoading}
 				originalItemList={originalItemList}
 				paginate={paginate}
+				searchFunctions={searchFunctions}
+				SearchFilterComponents={SearchFilterComponents}
+				searchIntialValues={searchIntialValues}
 			>
 				<ItemDisplay itemList={currentItemList} loading={loading} />
 				<Pagination
