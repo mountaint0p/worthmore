@@ -11,7 +11,7 @@ import {
 
 export default function FAQ() {
 	return (
-		<Container maxW={"5xl"} py={12}>
+		<Container maxW={"4xl"} py={12}>
 			<Heading size="3xl" align="center">
 				Worthmore F.A.Q
 			</Heading>
@@ -19,7 +19,7 @@ export default function FAQ() {
 				<AccordionItem>
 					<h2>
 						<AccordionButton>
-							<Box flex="1" textAlign="left">
+							<Box flex="1" textAlign="left" fontSize="xl" fontWeight="bold">
 								How do donations in residence hall lounges work during spring
 								move-out?
 							</Box>
@@ -40,7 +40,7 @@ export default function FAQ() {
 				<AccordionItem>
 					<h2>
 						<AccordionButton>
-							<Box flex="1" textAlign="left">
+							<Box flex="1" textAlign="left" fontSize="xl" fontWeight="bold">
 								When/how can I donate to Worthmore?
 							</Box>
 							<AccordionIcon />
@@ -59,6 +59,53 @@ export default function FAQ() {
 						several weeks. We can't be exact with the days because both setting
 						up and breaking down the sites takes the Worthmore team a few days
 						on each end.
+					</AccordionPanel>
+				</AccordionItem>
+
+				<AccordionItem>
+					<h2>
+						<AccordionButton>
+							<Box flex="1" textAlign="left" fontSize="xl" fontWeight="bold">
+								What can I donate to Worthmore?
+							</Box>
+							<AccordionIcon />
+						</AccordionButton>
+					</h2>
+					<AccordionPanel pb={4}>
+						When deciding whether an item can be donated, be practical and
+						respectful! Do not donate items that are unhygienic, contain any
+						personal identification, or are against College policy (e.g.,
+						candles). During move-out, please place all donated items in bins in
+						the correct designated area. For example, clothing goes in the
+						large, GreenDrop cardboard box. Learn more here about which items
+						will and will not be accepted as donations during move-out.
+					</AccordionPanel>
+				</AccordionItem>
+
+				<AccordionItem>
+					<h2>
+						<AccordionButton>
+							<Box flex="1" textAlign="left" fontSize="xl" fontWeight="bold">
+								What is the history of Worthmore?
+							</Box>
+							<AccordionIcon />
+						</AccordionButton>
+					</h2>
+					<AccordionPanel pb={4}>
+						Worthmore began with the move-out of Spring 2017, replacing the
+						Trash2Treasure summer sale that operated from 2007 to 2015. Due to a
+						combination of factors, we decided to discontinue Trash2Treasure and
+						to consider alternative means to make use of the items students
+						leave behind. Because the sale took place over the summer,
+						Trash2Treasure was formerly inaccessible to most Swarthmore students
+						despite selling items that students really need. By saving items for
+						the Free Store, we hope to help the needs of incoming and returning
+						students. Furthermore, the previous model for the sale required
+						hundreds of volunteer hours on the part of staff and significant
+						funding to pay student workers. By using any lounge as a collection
+						point (instead of our now more limited designated areas), the
+						previous system left EVS staff with the burden of transporting,
+						sorting, and separating donations from trash.
 					</AccordionPanel>
 				</AccordionItem>
 			</Accordion>
