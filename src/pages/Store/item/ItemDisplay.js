@@ -1,6 +1,6 @@
 //Displays items onto store page
 import React from "react";
-import { Wrap, Heading, Spinner, Flex } from "@chakra-ui/react";
+import { SimpleGrid, Wrap, Heading, Spinner, Flex } from "@chakra-ui/react";
 import ItemProfile from "./ItemProfile";
 
 export default function ItemDisplay({ itemList, loading }) {
@@ -12,10 +12,15 @@ export default function ItemDisplay({ itemList, loading }) {
 			</Flex>
 		);
 	return (
-		<Wrap maxW="900px" justify="center">
+		<SimpleGrid
+			columns={{ base: 2, md: 3 }}
+			spacing={5}
+			maxW="900px"
+			justify="center"
+		>
 			{itemList.map((item) => {
 				return <ItemProfile key={item.id} item={item} />;
 			})}
-		</Wrap>
+		</SimpleGrid>
 	);
 }

@@ -20,6 +20,7 @@ import {
 	AccordionItem,
 	AccordionButton,
 	AccordionIcon,
+	Heading,
 } from "@chakra-ui/react";
 import { Form, Formik, Field } from "formik";
 import { database, storage } from "../../firebaseConfig";
@@ -80,7 +81,7 @@ const uploadItem = async (itemTitle, tags, file, errorMessages) => {
 
 const TagSelector = () => {
 	return (
-		<Accordion mt="10px" allowMultiple>
+		<Accordion mt="20px" allowMultiple>
 			<AccordionItem>
 				<AccordionButton fontSize="15px">
 					Select Tags
@@ -134,7 +135,7 @@ const TitleSelector = ({ values, handleChange }) => {
 
 const ImageSelector = ({ setFieldValue }) => {
 	return (
-		<FormControl>
+		<FormControl mt="20px">
 			<FormLabel
 				fontSize="sm"
 				fontWeight="md"
@@ -214,14 +215,21 @@ export default function ItemUpload() {
 	//NOTE: This is bad practice: taking object from hook to pass to a function later.
 	const errorMessages = MessageError();
 	return (
-		<Box bg={useColorModeValue("gray.50", "inherit")} p={10} h="100vh">
+		<Box
+			bg={useColorModeValue("gray.50", "inherit")}
+			p={10}
+			h="100vh"
+			align="center"
+		>
 			<Stack
 				px={4}
 				py={5}
 				bg={useColorModeValue("white", "gray.700")}
 				spacing={6}
 				p={{ sm: 6 }}
+				maxW="80vw"
 			>
+				<Heading>Item Upload</Heading>
 				<Formik
 					initialValues={{
 						itemTitle: "",

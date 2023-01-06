@@ -23,7 +23,7 @@ export default function Sidebar({
 }) {
 	const { isOpen, onClose } = useDisclosure();
 	return (
-		<Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
+		<Box minH="100vh" pb="60px" bg={useColorModeValue("gray.100", "gray.900")}>
 			<SidebarContent
 				onClose={() => onClose}
 				display={{ base: "none", md: "block" }}
@@ -78,9 +78,11 @@ const SidebarContent = (
 			borderRightColor={useColorModeValue("gray.200", "gray.700")}
 			w={{ base: "full", md: 80 }}
 			pos={{ base: "static", md: "fixed" }}
-			h={{ base: "280px", md: "full" }}
+			//Note: we use auto for "base" as for mobile view, the sidebar should expand with the accordion
+			h={{ base: "auto", md: "full" }}
 			{...rest}
 			pt="10px"
+			pb={{ base: "20px" }}
 		>
 			<Heading ml={{ base: "20px", md: "10px" }} mb="10px" size="md" mt="20px">
 				Search Filters
