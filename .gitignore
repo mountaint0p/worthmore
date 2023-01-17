@@ -24,3 +24,4 @@ yarn-error.log*
 
 #firebase 
 firebaseKey.js
+firepit-log.txt
