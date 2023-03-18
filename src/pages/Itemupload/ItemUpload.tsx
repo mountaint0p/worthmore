@@ -91,6 +91,7 @@ const uploadItem = async (
 		});
 		errorMessages.submitSuccess();
 	} catch (error) {
+		console.log(error);
 		errorMessages.uploadError();
 	}
 };

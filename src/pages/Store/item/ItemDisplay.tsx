@@ -18,10 +18,10 @@ export default function ItemDisplay({ itemList, loading }: ItemDisplayProps) {
 		);
 	return (
 		<SimpleGrid
-			columns={{ base: 2, md: 3 }}
+			columns={{ base: 1, md: 2, lg: 3 }}
 			spacing={5}
-			maxW="900px"
 			justifyContent="center"
+			w="100%"
 		>
 			{itemList.map((item) => {
 				return <ItemProfile key={item.id} item={item} />;

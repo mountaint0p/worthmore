@@ -68,8 +68,8 @@ export default function Navbar() {
 		}
 	};
 
-	const LoginControl = ({ user }: { user: User | null }) => {
-		if (user === null) {
+	const LoginControl = ({ user }: { user: User | null | undefined }) => {
+		if (user === null || user == undefined) {
 			return <MenuItem onClick={() => handleLogin()}>Sign In</MenuItem>;
 		} else {
 			return (
