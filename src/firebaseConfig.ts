@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-ignore small change
 import { firebaseKey } from "./firebaseKey.js";
 
 // Import the functions you need from the SDKs you need
