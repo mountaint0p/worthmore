@@ -1,40 +1,27 @@
-import { useToast } from "@chakra-ui/react";
-
 export default function UploadMessage() {
-	const imageError = useToast({
+	const imageError = {
 		title: "Submission failed.",
 		description: "Must upload an image file",
-		status: "error",
-		duration: 9000,
-		isClosable: true,
-	});
-	const titleError = useToast({
+		variant: "destructive",
+	};
+	const titleError = {
 		title: "Submission failed.",
 		description: "Cannot leave Image Title blank",
-		status: "error",
-		duration: 9000,
-		isClosable: true,
-	});
-	const tagError = useToast({
+		variant: "destructive",
+	};
+	const tagError = {
 		title: "Submission failed.",
 		description: "At least one tag must be selected",
-		status: "error",
-		duration: 9000,
-		isClosable: true,
-	});
-	const uploadError = useToast({
+		variant: "destructive",
+	};
+	const uploadError = {
 		title: "Upload to server failed.",
 		description: "Issue with server, refresh the page or contact team",
-		status: "error",
-		duration: 9000,
-		isClosable: true,
-	});
-	const submitSuccess = useToast({
+		variant: "destructive",
+	};
+	const submitSuccess = {
 		title: "Submission success.",
-		description: "Yay",
-		status: "success",
-		duration: 9000,
-		isClosable: true,
-	});
+		description: "Yay!",
+	};
 	return { imageError, titleError, tagError, submitSuccess, uploadError };
 }

@@ -1,11 +1,11 @@
 //https://www.robinwieruch.de/react-router-private-routes/
 
+import { User } from "@supabase/supabase-js";
+import Spinner from "../components/Spinner";
 import { Navigate } from "react-router-dom";
-import { User } from "firebase/auth";
-import { Spinner } from "@chakra-ui/react";
 
 type ProtectedRoutesProps = {
-	user: User;
+	user: User | null | undefined;
 	children: any;
 };
 const ProtectedRoutes = ({ user, children }: ProtectedRoutesProps) => {

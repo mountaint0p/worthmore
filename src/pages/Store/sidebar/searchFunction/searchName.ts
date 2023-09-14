@@ -7,7 +7,7 @@ function searchName(values: StoreSearchValues, newItemList: Item[]) {
 		return newItemList;
 	}
 	const fuseOptions = {
-		keys: ["title", "tags"],
+		keys: ["title"],
 	};
 	const fuse = new Fuse(newItemList, fuseOptions);
 	if (values.search.length !== 0) {

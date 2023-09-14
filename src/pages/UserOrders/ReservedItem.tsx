@@ -5,33 +5,47 @@ import {
 	VStack,
 	useColorModeValue,
 } from "@chakra-ui/react";
-import { doc, DocumentReference, updateDoc } from "firebase/firestore";
-import { database } from "../../firebaseConfig";
-import { UserAuth } from "../../context/AuthContext";
-import { FirestoreItem } from "../../types/firestoreItem";
-import { Item } from "../../types/Item";
-import { User } from "firebase/auth";
+import { SupaItem } from "../../types/supaItem";
+import { supaClient } from "../../supaClient";
 
-function ReserveItem({ item }: { item: Item }) {
-	const { user } = UserAuth();
-	const removeReservation = async (item: Item, user: User | null) => {
-		try {
-			const itemRef = doc(
-				database,
-				"items",
-				item.id
-			) as DocumentReference<FirestoreItem>;
-			await updateDoc(itemRef, {
-				onHold: false,
-				holderID: "",
-				holderName: "",
-				holderEmail: "",
-			});
-			//NOTE: Refresh after deleting reservation, might change?
-			window.location.reload();
-		} catch (error) {
-			console.log(error);
+function ReserveItem({
+	item,
+	loading,
+	user,
+}: {
+	item: SupaItem;
+	loading: boolean;
+	user: any;
+}) {
+	const removeReservation = async (item: SupaItem) => {
+		const res2 = await supaClient
+			.from("users")
+			.select("holds")
+			.eq("id", user.id)
+			.single();
+		if (res2.error) {
+			console.log(res2.error);
+			return;
 		}
+		const currHolds = res2.data.holds;
+		const res1 = await supaClient
+			.from("items")
+			.update({ holder_id: null })
+			.eq("id", item.id)
+			.select();
+		if (res1.error) {
+			console.log(res1.error);
+			return;
+		}
+		const res3 = await supaClient
+			.from("users")
+			.update({ holds: currHolds - 1 })
+			.eq("id", user.id)
+			.select();
+		if (res3.error) {
+			console.log(res3.error);
+		}
+		location.reload();
 	};
 	return (
 		<VStack
@@ -46,14 +60,19 @@ function ReserveItem({ item }: { item: Item }) {
 			tabIndex={0}
 			key={item.id}
 		>
-			<Image boxSize="200px" src={item.imageUrl} alt={item.title} />
+			<Image boxSize="200px" src={item.imageURL} alt={item.title} />
 			<Box mt="1" fontWeight="semibold" lineHeight="tight">
 				{item.title}
 			</Box>
 			<Box mt="1" fontWeight="semibold" lineHeight="tight">
-				Date Reserved: {item.dateAdded.toDate().toDateString()}
+				Date Reserved:{" "}
+				{item.dateAdded.substring(0, item.dateAdded.indexOf("T"))}
 			</Box>
-			<Button colorScheme="red" onClick={() => removeReservation(item, user)}>
+			<Button
+				colorScheme="red"
+				onClick={() => removeReservation(item)}
+				isDisabled={loading}
+			>
 				Cancel
 			</Button>
 		</VStack>

@@ -1,8 +1,8 @@
 import { Box, Image, Badge, Wrap, VStack } from "@chakra-ui/react";
 import { useDisclosure, useColorModeValue } from "@chakra-ui/react";
-import { Item } from "../../../types/Item";
+import { SupaItem } from "../../../types/supaItem";
 import AdminStoreItemModal from "./AdminStoreItemModal";
-function AdminStoreItem({ item }: { item: Item }) {
+function AdminStoreItem({ item }: { item: SupaItem }) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	return (
 		<VStack
@@ -16,13 +16,13 @@ function AdminStoreItem({ item }: { item: Item }) {
 			_hover={{ cursor: "pointer", boxShadow: "lg" }}
 			key={item.id}
 		>
-			<Image boxSize="200px" src={item.imageUrl} alt={item.title} />
+			<Image boxSize="200px" src={item.imageURL} alt={item.title} />
 			<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight">
 				{item.title}
 			</Box>
-			{item.onHold && <Badge colorScheme="red">RESERVED</Badge>}
+			{item.holder_id && <Badge colorScheme="red">RESERVED</Badge>}
 			<Wrap>
-				{item.tags.map((tag) => {
+				{item.tags.map((tag: string) => {
 					return <Badge key={tag}> {tag} </Badge>;
 				})}
 			</Wrap>

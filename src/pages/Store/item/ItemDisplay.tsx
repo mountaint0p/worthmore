@@ -1,11 +1,10 @@
 //Displays items onto store page
-import React from "react";
-import { SimpleGrid, Wrap, Heading, Spinner, Flex } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { SupaItem } from "../../../types/supaItem";
 import ItemProfile from "./ItemProfile";
-import { Item } from "../../../types/Item";
 
 type ItemDisplayProps = {
-	itemList: Item[];
+	itemList: SupaItem[];
 	loading: boolean;
 };
 export default function ItemDisplay({ itemList, loading }: ItemDisplayProps) {

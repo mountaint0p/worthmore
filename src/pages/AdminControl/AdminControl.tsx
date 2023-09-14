@@ -1,20 +1,13 @@
-import { ColorModeScript, Heading } from "@chakra-ui/react";
-import Pagination from "../Store/Pagination";
 import React, { useEffect, useState } from "react";
-import Sidebar from "../Store/sidebar/Sidebar";
+import { supaClient } from "../../supaClient";
+import { SupaItem } from "../../types/supaItem";
+import Pagination from "../Store/Pagination";
+import SidebarItems from "../Store/sidebar/SidebarItems";
+import Sidebar from "@/components/Sidebar";
 import AdminItemDisplay from "./AdminItem/AdminItemDisplay";
-import adminSearchFunctions from "./adminSearchFunctions";
-import { database } from "../../firebaseConfig";
-import {
-	collection,
-	CollectionReference,
-	getDocs,
-	query,
-} from "firebase/firestore";
 import AdminSearchFilterComponents from "./AdminSearchFilterComponents";
+import adminSearchFunctions from "./adminSearchFunctions";
 import adminSearchInitialValues from "./adminSearchInitialValues";
-import { Item } from "../../types/Item";
-import { FirestoreItem } from "../../types/firestoreItem";
 
 function AdminControl() {
 	const [currentPage, setCurrentPage] = React.useState(1);
@@ -22,8 +15,8 @@ function AdminControl() {
 	const itemPerPage = 6;
 
 	//originalItemList = all items from store, itemList = filtered items
-	let [originalItemList, setOriginalItemList] = useState<Item[]>([]);
-	let [itemList, setItemList] = useState<Item[]>([]);
+	let [originalItemList, setOriginalItemList] = useState<SupaItem[]>([]);
+	let [itemList, setItemList] = useState<SupaItem[]>([]);
 
 	//get currentItemList
 	const indexOfLastPost = currentPage * itemPerPage;
@@ -31,44 +24,41 @@ function AdminControl() {
 	const currentItemList = itemList.slice(indexOfFirstPost, indexOfLastPost);
 	const paginate = (number: number) => setCurrentPage(number);
 
-	//Fetches ALL items from firestore
+	//Fetches ALL items
 	useEffect(() => {
 		setLoading(true);
 		const fetchItems = async () => {
-			const itemsRef = collection(
-				database,
-				"items"
-			) as CollectionReference<FirestoreItem>;
-			const querySnapshot = await getDocs(itemsRef);
-			const newItemList: Item[] = [];
-			querySnapshot.docs.forEach((doc) => {
-				const item = doc.data();
-				const id = doc.id;
-				newItemList.push({ ...item, id: id });
-			});
-			//NOTE: Store manually sorts item by most recently added
-			newItemList.sort((a, b) => (a.dateAdded < b.dateAdded ? 1 : -1));
-			setOriginalItemList(newItemList);
-			setItemList(newItemList);
+			const { data, error } = await supaClient
+				.from("items")
+				.select("*, users (name)");
+			if (error) {
+				console.log(error);
+			}
+			if (data) {
+				console.log(data);
+				setOriginalItemList(data);
+				setItemList(data);
+			}
 		};
 		fetchItems();
 		setLoading(false);
 	}, []);
-	return (
-		<>
-			{/* <ColorModeScript initialColorMode="./style/theme.config.useSystemColorMode" /> */}
-			<Sidebar
+	//SidebarItem component with props
+	const SidebarItemWithProps = () => {
+		return (
+			<SidebarItems
 				setItemList={setItemList}
 				setLoading={setLoading}
 				originalItemList={originalItemList}
 				paginate={paginate}
-				searchFunctions={adminSearchFunctions}
-				//TODO: not sure why typescript error
-				// @ts-ignore
-				SearchFilterComponents={AdminSearchFilterComponents}
-				searchInitialValues={adminSearchInitialValues}
-			>
-				<Heading mb="10px">Admin Control</Heading>
+			/>
+		);
+	};
+	return (
+		<>
+			{/* <ColorModeScript initialColorMode="./style/theme.config.useSystemColorMode" /> */}
+			<Sidebar SidebarItems={SidebarItemWithProps}>
+				<h1 className="mb-5 mt-2 text-4xl font-black">Admin Control</h1>
 				<AdminItemDisplay itemList={currentItemList} loading={loading} />
 				<Pagination
 					itemPerPage={itemPerPage}
