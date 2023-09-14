@@ -3,30 +3,25 @@ import Store from "./pages/Store/Store";
 import Landing from "./pages/Landing/Landing";
 import ItemUpload from "./pages/Itemupload/ItemUpload";
 import UserOrders from "./pages/UserOrders/UserOrders";
-import React from "react";
-import Navbar from "./hooks/Navbar";
+import Navbar from "./components/Navbar";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import ProtectedRoutes from "./hooks/ProtectedRoutes";
-import { UserAuth } from "./context/AuthContext";
+import ProtectedRoutes from "./components/ProtectedRoutes";
+import { UserAuth } from "./context/AuthContext2";
 import AdminControl from "./pages/AdminControl/AdminControl";
 import Login from "./pages/Login/Login";
+import AdminSettings from "./pages/AdminSettings/AdminSettings";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
 	const { user } = UserAuth();
 	return (
 		<BrowserRouter>
+			<ScrollToTop />
 			<Navbar />
 			<Box mt="60px">
 				<Routes>
 					<Route path="/" element={<Landing />} />
-					<Route
-						path="/store"
-						element={
-							<ProtectedRoutes user={user}>
-								<Store />
-							</ProtectedRoutes>
-						}
-					/>
+					<Route path="/store" element={<Store />} />
 					<Route
 						path="/itemupload"
 						element={
@@ -49,6 +44,14 @@ function App() {
 						element={
 							<ProtectedRoutes user={user}>
 								<AdminControl />
+							</ProtectedRoutes>
+						}
+					/>
+					<Route
+						path="adminsettings"
+						element={
+							<ProtectedRoutes user={user}>
+								<AdminSettings />
 							</ProtectedRoutes>
 						}
 					/>

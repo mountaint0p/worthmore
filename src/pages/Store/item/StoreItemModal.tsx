@@ -9,20 +9,70 @@ import {
 	Image,
 	Button,
 	useToast,
+	Text,
 } from "@chakra-ui/react";
 
-import { UserAuth } from "../../../context/AuthContext";
+import { UserAuth } from "../../../context/AuthContext2";
 import { useNavigate } from "react-router-dom";
 import React, { MouseEventHandler, useState } from "react";
-import { Item } from "../../../types/Item";
+import { SupaItem } from "../../../types/supaItem";
+import { supaClient } from "../../../supaClient";
+import { Link } from "react-router-dom";
 
-import reserveItem from "./reserveItem";
+//NOTE: Item reservation is nested in here
+//TODO: Need to add check that item is not onHold before reserving
+
+type ReserveItemParams = {
+	item: SupaItem;
+	user: any;
+	navigate: Function;
+};
+const reserveItem = async ({ item, user, navigate }: ReserveItemParams) => {
+	const res = await supaClient
+		.from("users")
+		.select("*")
+		.eq("id", user.id)
+		.single();
+	if (res.error) {
+		console.log(res.error);
+		return;
+	}
+	let currHolds = res.data.holds;
+	if (res.data.holds <= 3) {
+		const res2 = await supaClient
+			.from("items")
+			.update({ holder_id: user.id })
+			.eq("id", item.id)
+			.select();
+		if (res2.error) {
+			console.log(res2.error);
+		}
+		const res3 = await supaClient
+			.from("users")
+			.update({ holds: currHolds + 1 })
+			.eq("id", user.id)
+			.select();
+		if (res3.error) {
+			console.log(res3.error);
+		}
+		navigate("/userorders");
+	} else {
+		alert("Error: can't reserve more than 3 items");
+	}
+
+	// if (error) {
+	// 	console.log(error);
+	// }
+	// if (data) {
+	// 	console.log(data);
+	// }
+};
 
 type ModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	onOpen: MouseEventHandler;
-	item: Item;
+	item: SupaItem;
 };
 function StoreItemModal({ isOpen, onClose, onOpen, item }: ModalProps) {
 	const [reserveAttempt, setReserveAttempt] = React.useState(false);
@@ -67,13 +117,13 @@ function StoreItemModal({ isOpen, onClose, onOpen, item }: ModalProps) {
 								<Image
 									onClick={onOpen}
 									boxSize="250px"
-									src={item.imageUrl}
+									src={item.imageURL!}
 									alt={item.title}
 									margin="auto"
 								/>
 							</ModalBody>
 							<ModalFooter margin="auto">
-								{user && (
+								{user ? (
 									<Button
 										mr={3}
 										colorScheme="telegram"
@@ -81,6 +131,13 @@ function StoreItemModal({ isOpen, onClose, onOpen, item }: ModalProps) {
 									>
 										Reserve
 									</Button>
+								) : (
+									<Text>
+										Want to reserve this item?{" "}
+										<Link to="/login">
+											<Button colorScheme={"green"}>Log-in!</Button>
+										</Link>
+									</Text>
 								)}
 							</ModalFooter>
 						</>

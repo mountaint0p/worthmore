@@ -1,41 +1,42 @@
 import { tagList } from "../../../../common/tagList";
+
 import {
 	Accordion,
 	AccordionItem,
-	AccordionButton,
-	Box,
-	AccordionIcon,
-	AccordionPanel,
-	CheckboxGroup,
-	VStack,
-	Checkbox,
-} from "@chakra-ui/react";
+	AccordionContent,
+	AccordionTrigger,
+} from "@/components/ui/Accordion";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Field } from "formik";
 
 const TagFilter = () => {
 	return (
-		<Accordion allowMultiple allowToggle>
-			<AccordionItem>
-				<AccordionButton>
-					<Box flex="1" textAlign="left">
-						Filter by Tags
-					</Box>
-					<AccordionIcon />
-				</AccordionButton>
-				<AccordionPanel pb={4}>
-					<CheckboxGroup defaultValue={[]} colorScheme="green">
-						<VStack align="left">
-							{/*Iterates through all tags for filter*/}
-							{tagList.map((tag) => {
-								return (
-									<Field name="tags" value={tag} as={Checkbox} key={tag}>
+		<Accordion type="multiple" className="border-b  border-black">
+			<AccordionItem value="item-1" className="px-4">
+				<AccordionTrigger>Filter by tags</AccordionTrigger>
+				<AccordionContent className="pl-1 pt-1">
+					<div className="flex flex-col items-start">
+						{tagList.map((tag) => {
+							return (
+								<div className="mb-2 flex items-start gap-2" key={tag}>
+									<Field
+										name="tags"
+										value={tag}
+										id={tag}
+										as={Checkbox}
+										key={tag}
+									/>
+									<label
+										htmlFor="terms"
+										className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+									>
 										{tag}
-									</Field>
-								);
-							})}
-						</VStack>
-					</CheckboxGroup>
-				</AccordionPanel>
+									</label>
+								</div>
+							);
+						})}
+					</div>
+				</AccordionContent>
 			</AccordionItem>
 		</Accordion>
 	);

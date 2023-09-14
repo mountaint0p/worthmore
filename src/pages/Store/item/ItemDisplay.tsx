@@ -1,11 +1,10 @@
 //Displays items onto store page
-import React from "react";
-import { SimpleGrid, Wrap, Heading, Spinner, Flex } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { SupaItem } from "../../../types/supaItem";
 import ItemProfile from "./ItemProfile";
-import { Item } from "../../../types/Item";
 
 type ItemDisplayProps = {
-	itemList: Item[];
+	itemList: SupaItem[];
 	loading: boolean;
 };
 export default function ItemDisplay({ itemList, loading }: ItemDisplayProps) {
@@ -18,10 +17,10 @@ export default function ItemDisplay({ itemList, loading }: ItemDisplayProps) {
 		);
 	return (
 		<SimpleGrid
-			columns={{ base: 1, md: 2, lg: 3 }}
+			columns={{ base: 2, md: 3 }}
 			spacing={5}
+			maxW="900px"
 			justifyContent="center"
-			w="100%"
 		>
 			{itemList.map((item) => {
 				return <ItemProfile key={item.id} item={item} />;

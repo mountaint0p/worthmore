@@ -3,9 +3,10 @@ import React from "react";
 import { Wrap, Heading, Spinner, Flex } from "@chakra-ui/react";
 import AdminItemProfile from "./AdminItemProfile";
 import { Item } from "../../../types/Item";
+import { SupaItem } from "../../../types/supaItem";
 
 type AdminItemDisplayProps = {
-	itemList: Item[];
+	itemList: SupaItem[];
 	loading: boolean;
 };
 export default function AdminItemDisplay({

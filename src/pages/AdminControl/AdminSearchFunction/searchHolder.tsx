@@ -3,11 +3,11 @@ import { AdminSearchValues } from "../../../types/adminSearchValues";
 import { Item } from "../../../types/Item";
 
 function searchHolder(values: AdminSearchValues, newItemList: Item[]) {
-	if (values.search.trim().length === 0) {
+	if (values.holder.trim().length === 0) {
 		return newItemList;
 	}
 	const fuseOptions = {
-		keys: ["holderName"],
+		keys: ["users.name"],
 	};
 	const fuse = new Fuse(newItemList, fuseOptions);
 	newItemList = fuse.search(values.holder).map((search) => {

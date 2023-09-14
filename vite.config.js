@@ -9,18 +9,15 @@ export default defineConfig({
 	build: {
 		outDir: "build",
 	},
-	// server: {
-	// 	open: true,
-	// },
+	server: {
+		open: true,
+		port: 3000,
+	},
+	preview: {
+		port: 3000,
+	},
 	base: "./",
-	optimizeDeps: {
-		exclude: [
-			"firebase",
-			"firebase/app",
-			"firebase/auth",
-			"firebase/firestore",
-			"firebase/analytics",
-			"firebase/storage",
-		],
+	resolve: {
+		alias: [{ find: "@", replacement: "/src" }],
 	},
 });

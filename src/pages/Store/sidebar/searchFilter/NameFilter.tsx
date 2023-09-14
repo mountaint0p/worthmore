@@ -1,11 +1,5 @@
-import {
-	useColorModeValue,
-	InputGroup,
-	InputLeftElement,
-	Input,
-} from "@chakra-ui/react";
 import { ChangeEventHandler } from "react";
-import { AiOutlineSearch } from "react-icons/ai";
+import { Search } from "lucide-react";
 import { StoreSearchValues } from "../../../../types/storeSearchValues";
 
 type SearchFilterComponentsProps = {
@@ -13,21 +7,17 @@ type SearchFilterComponentsProps = {
 	handleChange: ChangeEventHandler;
 };
 const NameFilter = ({ values, handleChange }: SearchFilterComponentsProps) => {
-	const searchBarColor = useColorModeValue("gray.100", "gray.700");
 	return (
-		<InputGroup ml="10px">
-			<InputLeftElement pointerEvents="none" children={<AiOutlineSearch />} />
-			<Input
-				bgColor={searchBarColor}
-				borderRadius="2xl"
-				width="90%"
-				height="35px"
+		<div className="ml-3 flex h-9 w-11/12 items-center gap-2 rounded-2xl border border-black bg-gray-100">
+			<Search size={19} className="ml-2" />
+			<input
+				className=" h-full w-full rounded-2xl bg-gray-100 outline-none"
 				name="search"
 				value={values.search || ""}
 				onChange={handleChange}
 				placeholder="Search Items by Name"
 			/>
-		</InputGroup>
+		</div>
 	);
 };
 

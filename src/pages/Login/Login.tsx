@@ -1,49 +1,45 @@
-import React from "react";
-import { FcGoogle } from "react-icons/fc";
-import { Button, Center, Text, Heading, Flex } from "@chakra-ui/react";
-import { UserAuth } from "../../context/AuthContext";
+import { Button } from "@/components/ui/Button";
+import { UserAuth } from "../../context/AuthContext2";
 import { useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
 
 function GoogleButton() {
 	//Authentication details
-	const { user, logOut, googleSignIn } = UserAuth();
+	const { googleSignIn } = UserAuth();
 	const navigate = useNavigate();
 
 	//login and logout
 
 	const handleLogin = async () => {
 		try {
-			await googleSignIn!();
+			await googleSignIn();
 			navigate("/", { replace: true });
 		} catch (error) {
 			console.log(error);
 		}
 	};
 	return (
-		<Center p={8}>
-			<Button
-				w={"full"}
-				maxW={"md"}
-				variant={"outline"}
-				leftIcon={<FcGoogle />}
-				onClick={() => handleLogin()}
-			>
-				<Center>
-					<Text>Sign in with your Swarthmore Gmail</Text>
-				</Center>
-			</Button>
-		</Center>
+		<Button
+			variant={"secondary"}
+			className="mt-5 gap-3"
+			onClick={() => googleSignIn()}
+		>
+			<FcGoogle />
+			Sign in with your Swarthmore Gmail
+		</Button>
 	);
 }
 
 function Login() {
 	return (
-		<>
-			<Flex justify="center" align="center" direction="column" mt="100px">
-				<Heading>Sign In</Heading>
-				<GoogleButton />
-			</Flex>
-		</>
+		// <Flex justify="center" align="center" direction="column" mt="100px">
+		// 	<Heading>Sign In</Heading>
+		// 	<GoogleButton />
+		// </Flex>
+		<div className="mt-20 flex flex-col items-center justify-center">
+			<h1 className="text-3xl font-bold">Sign In</h1>
+			<GoogleButton />
+		</div>
 	);
 }
 

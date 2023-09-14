@@ -1,10 +1,10 @@
 import { AdminSearchValues } from "../../../types/adminSearchValues";
-import { Item } from "../../../types/Item";
+import { SupaItem } from "../../../types/supaItem";
 
-function searchReserved(values: AdminSearchValues, newItemList: Item[]) {
+function searchReserved(values: AdminSearchValues, newItemList: SupaItem[]) {
 	if (values.reserved) {
 		newItemList = newItemList.filter((item) => {
-			return item.onHold;
+			return item.holder_id;
 		});
 	}
 	return newItemList;

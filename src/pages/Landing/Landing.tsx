@@ -1,25 +1,27 @@
-import React from "react";
-import { VStack, Box } from "@chakra-ui/react";
-import AboutWorthmore from "./AboutWorthmore.tsx";
-import MoveOut from "./MoveOut.tsx";
-import FAQ from "./FAQ.tsx";
-import Hero from "./Hero.tsx";
+import AboutWorthmore from "./AboutWorthmore";
+import MoveOut from "./MoveOut";
+import FAQ from "./FAQ";
+import Hero from "./Hero";
+import Banner from "./Banner";
+import Steps from "./Steps";
+import Footer from "./Footer";
+import Impact from "./Impact";
 
 function Landing() {
 	// const about = useRef();
 
 	// const executeScroll = () => about.current.scrollIntoView()
-
 	return (
-		<VStack>
+		<div className="flex w-screen flex-col items-center gap-28">
+			<Banner />
 			<Hero />
+			<Steps />
 			<AboutWorthmore />
-			<Box p="50px" />
 			<MoveOut />
-			<Box p="50px" />
+			<Impact />
 			<FAQ />
-			<Box p="50px" />
-		</VStack>
+			<Footer />
+		</div>
 	);
 }
 

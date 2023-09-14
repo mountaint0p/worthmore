@@ -1,40 +1,24 @@
-import React from "react";
 import {
-	chakra,
-	Box,
-	Flex,
-	useColorModeValue,
-	Accordion,
-	Text,
-	Stack,
 	FormControl,
 	FormLabel,
 	Input,
 	FormHelperText,
-	Icon,
-	Button,
-	Checkbox,
-	AccordionPanel,
-	VStack,
-	CheckboxGroup,
-	AccordionItem,
-	AccordionButton,
-	AccordionIcon,
-	Heading,
 } from "@chakra-ui/react";
-import { Form, Formik, Field } from "formik";
-import { database, storage } from "../../firebaseConfig";
-import {
-	collection,
-	addDoc,
-	Timestamp,
-	serverTimestamp,
-} from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Formik, Field } from "formik";
 import MessageError from "./UploadMessage";
 import { tagList } from "../../common/tagList";
 import { Tag } from "../../types/Tag";
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, useState, useEffect } from "react";
+import { supaClient } from "../../supaClient";
+import { Button } from "@/components/ui/Button";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/Accordion";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { useToast } from "../../components/ui/use-toast";
 
 type ItemUploadValues = {
 	file: File | "";
@@ -43,56 +27,57 @@ type ItemUploadValues = {
 };
 
 /**
- * Uploads item to firebase on form submit
+ * Uploads item to supabase on form submit
  */
 const uploadItem = async (
 	itemTitle: string,
 	tags: string[],
 	file: File | "",
-	errorMessages: ReturnType<typeof MessageError>
+	errorMessages: ReturnType<typeof MessageError>,
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
+	const toast = useToast();
 	if (itemTitle === "") {
-		errorMessages.titleError();
+		toast(errorMessages.titleError);
 		return;
 	}
 	if (tags.length === 0) {
-		errorMessages.tagError();
+		toast(errorMessages.tagError);
 		return;
 	}
 	if (file === "") {
-		errorMessages.imageError();
+		toast(errorMessages.imageError);
 		return;
 	}
+	setLoading(true);
 	//Create file name for image
 	const timeStamp = Date.now();
 	const fileType = file.name.split(".").pop();
 	const newFileName = itemTitle.replace(/\s/g, "");
 	const fileName = newFileName + timeStamp + "." + fileType;
-	try {
-		//Upload image to cloud storage
-		const imageRef = ref(storage, `/images/${fileName}`);
-		const snapshot = await uploadBytes(imageRef, file);
-		const url = await getDownloadURL(imageRef);
-		const date = serverTimestamp();
 
-		//NOTE: item properties here
-		//Upload item to firestore
-		await addDoc(collection(database, "items"), {
-			title: itemTitle,
-			imageUrl: url,
-			tags: tags,
-			dateAdded: date,
-			onHold: false,
-			holderName: "",
-			holderEmail: "",
-			holderID: "",
-			//NOTE: dateOnHold is a default value
-			dateOnHold: date,
-		});
-		errorMessages.submitSuccess();
-	} catch (error) {
+	const { data, error } = await supaClient.storage
+		.from("images")
+		.upload(fileName, file);
+	if (error) {
+		toast(errorMessages.uploadError);
 		console.log(error);
-		errorMessages.uploadError();
+		return;
+	}
+	console.log(data);
+	const url = await supaClient.storage.from("images").getPublicUrl(fileName)
+		.data.publicUrl;
+	const res = await supaClient
+		.from("items")
+		.insert({ title: itemTitle, tags: tags, imageURL: url })
+		.select();
+	setLoading(false);
+	if (res.error) {
+		toast(errorMessages.uploadError);
+		return;
+	}
+	if (res.data) {
+		toast(errorMessages.submitSuccess);
 	}
 };
 
@@ -101,25 +86,47 @@ const uploadItem = async (
  */
 const TagSelector = () => {
 	return (
-		<Accordion mt="20px" allowMultiple>
-			<AccordionItem>
-				<AccordionButton fontSize="15px">
-					Select Tags
-					<AccordionIcon ml="15px" />
-				</AccordionButton>
-				<AccordionPanel pb={4}>
-					<CheckboxGroup defaultValue={[]} colorScheme="green">
-						<VStack align="left">
-							{tagList.map((tag) => {
-								return (
-									<Field name="tags" value={tag} as={Checkbox} key={tag}>
+		// <Accordion mt="20px" allowMultiple>
+		// 	<AccordionItem>
+		// 		<AccordionButton fontSize="15px">
+		// 			Select Tags
+		// 			<AccordionIcon ml="15px" />
+		// 		</AccordionButton>
+		// 		<AccordionPanel pb={4}>
+		// 			<CheckboxGroup defaultValue={[]} colorScheme="green">
+		// 				<VStack align="left">
+		// 					{tagList.map((tag) => {
+		// 						return (
+		// 							<Field name="tags" value={tag} as={Checkbox} key={tag}>
+		// 								{tag}
+		// 							</Field>
+		// 						);
+		// 					})}
+		// 				</VStack>
+		// 			</CheckboxGroup>
+		// 		</AccordionPanel>
+		// 	</AccordionItem>
+		// </Accordion>
+		<Accordion type="single" collapsible className="w-full">
+			<AccordionItem value="item-1">
+				<AccordionTrigger>Item Tags</AccordionTrigger>
+				<AccordionContent>
+					<div className="flex flex-col gap-2">
+						{tagList.map((tag) => {
+							return (
+								<div className="align-items flex gap-2" key={tag}>
+									<Field as={Checkbox} name="tags" value={tag} key={tag} />
+									<label
+										htmlFor="terms"
+										className="text-base font-medium leading-none"
+									>
 										{tag}
-									</Field>
-								);
-							})}
-						</VStack>
-					</CheckboxGroup>
-				</AccordionPanel>
+									</label>
+								</div>
+							);
+						})}
+					</div>
+				</AccordionContent>
 			</AccordionItem>
 		</Accordion>
 	);
@@ -166,131 +173,76 @@ const ImageSelector = ({
 	) => void;
 }) => {
 	return (
-		<FormControl mt="20px">
-			<FormLabel
-				fontSize="sm"
-				fontWeight="md"
-				//color={useColorModeValue("gray.700", "gray.50")}
+		<div className=" flex w-full items-center justify-center">
+			{/* <label
+				htmlFor="dropzone-file"
+				className="dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
 			>
-				Cover photo
-			</FormLabel>
-			<Flex
-				mt={1}
-				justify="center"
-				px={6}
-				pt={5}
-				pb={6}
-				borderWidth={2}
-				//bordercolor={useColorModeValue("gray.300", "gray.500")}
-				borderStyle="dashed"
-				rounded="md"
-			>
-				<Stack spacing={1} textAlign="center">
-					<Icon
-						mx="auto"
-						boxSize={12}
-						//color={useColorModeValue("gray.400", "gray.500")}
-						stroke="currentColor"
-						fill="none"
-						viewBox="0 0 48 48"
+				<div className="flex flex-col items-center justify-center pb-6 pt-5">
+					<svg
 						aria-hidden="true"
+						className="mb-3 h-10 w-10 text-gray-400"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
 					>
 						<path
-							d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-							strokeWidth="2"
 							strokeLinecap="round"
 							strokeLinejoin="round"
-						/>
-					</Icon>
-					<Flex
-						fontSize="sm"
-						//color={useColorModeValue("gray.600", "gray.400")}
-						alignItems="baseline"
-					>
-						<chakra.label
-							htmlFor="file-upload"
-							cursor="pointer"
-							rounded="md"
-							fontSize="md"
-							//color={useColorModeValue("brand.600", "brand.200")}
-							pos="relative"
-							_hover={
-								{
-									//color: useColorModeValue("brand.400", "brand.300"),
-								}
-							}
-						>
-							<Input
-								id="file"
-								name="file"
-								type="file"
-								onChange={(event) => {
-									setFieldValue("file", event.currentTarget.files![0]);
-								}}
-							/>
-						</chakra.label>
-					</Flex>
-					<Text
-						fontSize="xs"
-						//color={useColorModeValue("gray.500", "gray.50")}
-					>
-						PNG or JPG
-					</Text>
-				</Stack>
-			</Flex>
-		</FormControl>
+							strokeWidth="2"
+							d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+						></path>
+					</svg>
+					<p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+						<span className="font-semibold">Click to upload</span> or drag and
+						drop
+					</p>
+					<p className="text-xs text-gray-500 dark:text-gray-400">
+						SVG, PNG, JPG
+					</p>
+				</div>
+				<Field as="input" id="dropzone-file" type="file" className="hidden" />
+			</label> */}
+		</div>
 	);
 };
 
 export default function ItemUpload() {
 	//NOTE: This is bad practice: taking object from hook to pass to a function later.
 	const errorMessages = MessageError();
+	const [loading, setLoading] = useState(false);
 	const initialValues: ItemUploadValues = {
 		itemTitle: "",
 		tags: [],
 		file: "",
 	};
 	return (
-		<Flex
-			bg={useColorModeValue("gray.50", "inherit")}
-			p={10}
-			h="100vh"
-			justify={"center"}
-		>
-			<Stack
-				px={4}
-				py={5}
-				bg={useColorModeValue("white", "gray.700")}
-				spacing={6}
-				p={{ sm: 6 }}
-				align="center"
-				w="80vw"
-				h="70vh"
+		<div className=" flex h-screen w-full flex-col items-center gap-5">
+			<h2 className="pt-10 text-4xl font-bold">Item Upload</h2>
+			<Formik
+				initialValues={initialValues}
+				onSubmit={async (values) => {
+					await uploadItem(
+						values.itemTitle,
+						values.tags,
+						values.file,
+						errorMessages,
+						setLoading
+					);
+				}}
 			>
-				<Heading>Item Upload</Heading>
-				<Formik
-					initialValues={initialValues}
-					onSubmit={async (values) => {
-						await uploadItem(
-							values.itemTitle,
-							values.tags,
-							values.file,
-							errorMessages
-						);
-					}}
-				>
-					{({ values, setFieldValue, handleChange }) => (
-						<Form>
-							<TitleSelector values={values} handleChange={handleChange} />
-							<TagSelector />
-							<ImageSelector setFieldValue={setFieldValue} />
-							<Button mt="20px" type="submit">
-								Submit Item
-							</Button>
-						</Form>
-					)}
-				</Formik>
-			</Stack>
-		</Flex>
+				{({ values, setFieldValue, handleChange }) => (
+					<form className="flex w-1/2 flex-col gap-5">
+						<TitleSelector values={values} handleChange={handleChange} />
+						<TagSelector />
+						<ImageSelector setFieldValue={setFieldValue} />
+						<Button type="submit" disabled={loading}>
+							Submit Item
+						</Button>
+					</form>
+				)}
+			</Formik>
+		</div>
 	);
 }

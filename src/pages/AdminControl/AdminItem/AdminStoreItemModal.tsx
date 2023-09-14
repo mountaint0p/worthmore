@@ -1,71 +1,106 @@
 import {
+	Button,
+	Image,
 	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	Image,
-	Button,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
 	Text,
 	VStack,
-	useToast,
 } from "@chakra-ui/react";
 
-import { UserAuth } from "../../../context/AuthContext";
-import { database } from "../../../firebaseConfig";
-import {
-	writeBatch,
-	updateDoc,
-	doc,
-	collection,
-	DocumentReference,
-	increment,
-} from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { Item } from "../../../types/Item";
-import { User } from "firebase/auth";
-import { FirestoreItem } from "../../../types/firestoreItem";
-import { FirestoreUser } from "../../../types/firestoreUser";
 import { MouseEventHandler } from "react";
+import { UserAuth } from "../../../context/AuthContext2";
+import { supaClient } from "../../../supaClient";
+import { SupaItem } from "../../../types/supaItem";
 
-//NOTE: Item reservation is nested in here
+// completeOrder
+// removeOrder
+// removeItem
 
-const removeItem = async (item: Item, user: User) => {
-	try {
-		let batch = writeBatch(database);
-		const itemRef = doc(
-			database,
-			"items",
-			item.id
-		) as DocumentReference<FirestoreItem>;
-		const userRef = doc(
-			database,
-			"users",
-			user.uid
-		) as DocumentReference<FirestoreUser>;
-		batch.set(
-			itemRef,
-			{
-				onHold: false,
-				holderID: "",
-				holderName: "",
-				holderEmail: "",
-			},
-			{ merge: true }
-		);
-		batch.set(
-			userRef,
-			{
-				holds: increment(-1),
-			},
-			{ merge: true }
-		);
-		await batch.commit();
-		location.reload();
-	} catch (error) {
+/*
+	Deletes item from store and database 
+*/
+const removeItemFromUser = async (item: SupaItem) => {
+	if (item.holder_id) {
+		const id = item.holder_id;
+		const res = await supaClient
+			.from("users")
+			.select("holds")
+			.eq("id", id)
+			.single();
+		if (res.error) {
+			alert("error has occured");
+			console.log(res.error);
+			return;
+		}
+		const currHolds = res.data.holds;
+		const res2 = await supaClient
+			.from("users")
+			.update({ holds: currHolds - 1 })
+			.eq("id", id)
+			.select();
+		if (res2.error) {
+			alert("error has occured");
+			console.log(res2.error);
+			return;
+		}
+	}
+};
+const deleteItem = async (item: SupaItem) => {
+	//TODO: Remove image from storage after deleting
+	//TODO: Decrease number of holds from user
+	await removeItemFromUser(item);
+	const { data, error } = await supaClient
+		.from("items")
+		.delete()
+		.eq("id", item.id)
+		.select();
+	if (error) {
 		console.log(error);
+	}
+	if (data) {
+		location.reload();
+	}
+};
+
+/*
+	Removes reservation from item, putting item back into the store
+*/
+const removeOrder = async (item: SupaItem) => {
+	await removeItemFromUser(item);
+	const { data, error } = await supaClient
+		.from("items")
+		.update({ holder_id: null })
+		.eq("id", item.id)
+		.select();
+	if (error) {
+		console.log(error);
+	}
+	if (data) {
+		location.reload();
+	}
+};
+
+/*
+	Completes order on item, removing it from store and database
+*/
+const completeOrder = async (item: SupaItem) => {
+	//TODO: Track what items are deleted vs completed
+	await removeItemFromUser(item);
+	const { data, error } = await supaClient
+		.from("items")
+		.delete()
+		.eq("id", item.id)
+		.select();
+	if (error) {
+		console.log(error);
+	}
+	if (data) {
+		location.reload();
 	}
 };
 
@@ -73,7 +108,7 @@ type ModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	onOpen: MouseEventHandler;
-	item: Item;
+	item: SupaItem;
 };
 
 function AdminStoreItemModal({ isOpen, onClose, onOpen, item }: ModalProps) {
@@ -89,25 +124,36 @@ function AdminStoreItemModal({ isOpen, onClose, onOpen, item }: ModalProps) {
 						<Image
 							onClick={onOpen}
 							boxSize="250px"
-							src={item.imageUrl}
+							src={item.imageURL}
 							alt={item.title}
 						/>
 					</ModalBody>
 					<ModalFooter>
 						<VStack>
-							<Text>Date added: {item.dateAdded.toDate().toDateString()}</Text>
-							{item.onHold && (
+							<Text>
+								Date added:{" "}
+								{item.dateAdded.substring(0, item.dateAdded.indexOf("T"))}
+							</Text>
+							{item.holder_id && (
 								<>
-									<Text>Reserved by {item.holderName}</Text>
+									<Text>Reserved by {item.users.name}</Text>
 									<Button
-										mr={3}
-										colorScheme="red"
-										onClick={() => removeItem(item, user!)}
+										colorScheme="green"
+										onClick={() => completeOrder(item)}
 									>
-										Remove
+										Complete Order
+									</Button>
+									<Button
+										colorScheme="yellow"
+										onClick={() => removeOrder(item)}
+									>
+										Remove Reservation
 									</Button>
 								</>
 							)}
+							<Button mr={3} colorScheme="red" onClick={() => deleteItem(item)}>
+								Delete Item
+							</Button>
 						</VStack>
 					</ModalFooter>
 				</ModalContent>

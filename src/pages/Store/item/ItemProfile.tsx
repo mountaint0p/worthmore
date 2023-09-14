@@ -1,16 +1,17 @@
-import { Box, Image, Badge, Wrap, VStack } from "@chakra-ui/react";
 import {
-	useDisclosure,
-	useColorModeValue,
+	Badge,
 	Card,
 	CardBody,
-	Stack,
 	Heading,
+	Image,
+	Stack,
+	useDisclosure,
+	Wrap,
 } from "@chakra-ui/react";
+import { SupaItem } from "../../../types/supaItem";
 import StoreItemModal from "./StoreItemModal";
-import { Item } from "../../../types/Item";
 
-const StoreItem = ({ item }: { item: Item }) => {
+function StoreItem({ item }: { item: SupaItem }) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	return (
 		<Card
@@ -26,7 +27,7 @@ const StoreItem = ({ item }: { item: Item }) => {
 		>
 			<CardBody w="100%" p="0">
 				<Image
-					src={item.imageUrl}
+					src={item.imageURL}
 					alt={item.title}
 					borderTopRadius="lg"
 					w="100%"
@@ -34,9 +35,11 @@ const StoreItem = ({ item }: { item: Item }) => {
 					fit="cover"
 				/>
 				<Stack mt="6" spacing="3" w="100%" p=".5rem">
-					<Heading size="md">{item.title}</Heading>
+					<Heading size="md" noOfLines={1}>
+						{item.title}
+					</Heading>
 					<Wrap>
-						{item.tags.map((tag) => {
+						{item.tags.map((tag: string) => {
 							return (
 								<Badge key={tag} colorScheme="blackAlpha">
 									{" "}
@@ -54,38 +57,6 @@ const StoreItem = ({ item }: { item: Item }) => {
 				item={item}
 			/>
 		</Card>
-	);
-};
-
-function Temp({ item }: { item: Item }) {
-	const { isOpen, onOpen, onClose } = useDisclosure();
-	return (
-		<VStack
-			w={{ base: "150px", md: "250px" }}
-			h="325px"
-			p="10px"
-			borderWidth="1px"
-			minWidth="200px"
-			onClick={onOpen}
-			bgColor={useColorModeValue("white", "gray.900")}
-			tabIndex={0}
-		>
-			<Image boxSize="200px" src={item.imageUrl} alt={item.title} />
-			<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight">
-				{item.title}
-			</Box>
-			<Wrap>
-				{item.tags.map((tag) => {
-					return <Badge key={tag}> {tag} </Badge>;
-				})}
-			</Wrap>
-			<StoreItemModal
-				isOpen={isOpen}
-				onClose={onClose}
-				onOpen={onOpen}
-				item={item}
-			/>
-		</VStack>
 	);
 }
 

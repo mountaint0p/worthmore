@@ -1,37 +1,22 @@
-import { Wrap, ColorModeScript, Text } from "@chakra-ui/react";
-import Sidebar from "./sidebar/Sidebar";
-import Pagination from "./Pagination";
+import Spinner from "../../components/Spinner";
 import React, { useEffect, useState } from "react";
+import { SupaItem } from "../../types/supaItem";
 import ItemDisplay from "./item/ItemDisplay";
-import { database } from "../../firebaseConfig";
-import {
-	collection,
-	getDocs,
-	where,
-	query,
-	CollectionReference,
-} from "firebase/firestore";
+import Pagination from "./Pagination";
+import Sidebar from "@/components/Sidebar";
+import SidebarItems from "./sidebar/SidebarItems";
 
-//import all searchFunctions
-import searchName from "./sidebar/searchFunction/searchName";
-import sortItem from "./sidebar/searchFunction/sortItem";
-import searchTag from "./sidebar/searchFunction/searchTag";
-
-//import all searchFilter components
-import SearchFilterComponents from "./sidebar/SearchFilterComponents";
-
-import searchIntialValues from "./sidebar/searchInitialValues";
-import { FirestoreItem } from "../../types/firestoreItem";
-import { Item } from "../../types/Item";
+import { UserAuth } from "../../context/AuthContext2";
+import { supaClient } from "../../supaClient";
 
 function Store() {
 	const [currentPage, setCurrentPage] = React.useState(1);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const itemPerPage = 6;
 
 	//originalItemList = all items from store, itemList = filtered items
-	let [originalItemList, setOriginalItemList] = useState<Item[]>([]);
-	let [itemList, setItemList] = useState<Item[]>([]);
+	let [originalItemList, setOriginalItemList] = useState<SupaItem[]>([]);
+	let [itemList, setItemList] = useState<SupaItem[]>([]);
 
 	//get currentItemList
 	const indexOfLastPost = currentPage * itemPerPage;
@@ -39,54 +24,78 @@ function Store() {
 	const currentItemList = itemList.slice(indexOfFirstPost, indexOfLastPost);
 	const paginate = (number: number) => setCurrentPage(number);
 
-	//create array of searchFunctions to pass into sidebar
-	const searchFunctions = [searchName, sortItem, searchTag];
+	//checks if store is closed
+	const [closed, setClosed] = useState(false);
 
-	//Fetches all items from firestore
+	//create array of searchFunctions to pass into sidebar
+	const { user } = UserAuth();
+
+	//Checks if store is closed, and then fetches all items from database
 	useEffect(() => {
+		//TODO: Figure out why items are still fetched when store is closed
 		setLoading(true);
-		const fetchItems = async () => {
-			const itemsRef = collection(
-				database,
-				"items"
-			) as CollectionReference<FirestoreItem>;
-			const q = query(itemsRef, where("onHold", "==", false));
-			const querySnapshot = await getDocs(q);
-			const newItemList: Item[] = [];
-			querySnapshot.docs.forEach((doc) => {
-				const item = doc.data();
-				const id = doc.id;
-				newItemList.push({ ...item, id: id });
-			});
-			//NOTE: Store manually sorts item by most recently added
-			newItemList.sort((a, b) => (a.dateAdded < b.dateAdded ? 1 : -1));
-			setOriginalItemList(newItemList);
-			setItemList(newItemList);
+		const fetchStoreStatus = async () => {
+			const { data, error } = await supaClient.from("store_status").select("*");
+			//if error or wrong fetched data length
+			if (error || (data && data.length != 1)) {
+				console.log(error);
+			}
+			if (data) {
+				setClosed(data[0].is_closed);
+			}
 		};
-		fetchItems();
+		const fetchItems = async () => {
+			const { data, error } = await supaClient
+				.from("items")
+				.select("*")
+				.is("holder_id", null);
+			if (error) {
+				console.log(error);
+				return;
+			}
+			if (data) {
+				const newItemList: SupaItem[] = [];
+				data?.forEach((item) => {
+					newItemList.push(item);
+				});
+				setOriginalItemList(newItemList);
+				setItemList(newItemList);
+			}
+		};
+		fetchStoreStatus();
+		if (!closed) {
+			fetchItems();
+		}
 		setLoading(false);
 	}, []);
-	return (
-		<>
-			{/* <ColorModeScript initialColorMode="./style/theme.config.useSystemColorMode" /> */}
-			<Sidebar
+	//SidebarItem component with props
+	const SidebarItemWithProps = () => {
+		return (
+			<SidebarItems
 				setItemList={setItemList}
 				setLoading={setLoading}
 				originalItemList={originalItemList}
 				paginate={paginate}
-				searchFunctions={searchFunctions}
-				//TODO: not sure why typescript error
-				// @ts-ignore
-				SearchFilterComponents={SearchFilterComponents}
-				searchIntialValues={searchIntialValues}
-			>
-				<ItemDisplay itemList={currentItemList} loading={loading} />
-				<Pagination
-					itemPerPage={itemPerPage}
-					totalItems={itemList.length}
-					paginate={paginate}
-					currentPage={currentPage}
-				/>
+			/>
+		);
+	};
+	return (
+		<>
+			{/* <ColorModeScript initialColorMode="./style/theme.config.useSystemColorMode" /> */}
+			<Sidebar SidebarItems={SidebarItemWithProps}>
+				{closed && <h1>Store is Currently Closed</h1>}
+				{loading && <Spinner />}
+				{!loading && !closed && (
+					<>
+						<ItemDisplay itemList={currentItemList} loading={loading} />
+						<Pagination
+							itemPerPage={itemPerPage}
+							totalItems={itemList.length}
+							paginate={paginate}
+							currentPage={currentPage}
+						/>
+					</>
+				)}
 			</Sidebar>
 		</>
 	);

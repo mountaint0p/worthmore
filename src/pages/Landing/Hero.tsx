@@ -1,49 +1,40 @@
-import React from "react";
-import { Flex, Heading, Box, Button, Text } from "@chakra-ui/react";
+import { Button } from "@/components/ui/Button";
 import { Link, Link as RouterLink } from "react-router-dom";
 
 function Hero() {
 	return (
-		<Flex
-			direction="column"
-			height="90vh"
-			justify="center"
-			align="center"
-			width="90vw"
-		>
-			<Heading size={{ base: "3xl", md: "4xl" }}>Worthmore:</Heading>
-			<Heading
-				display="flex"
-				textAlign="center"
-				size={{ base: "3xl", md: "4xl" }}
-			>
+		<div className="-mb-32 -mt-10 flex h-screen w-full flex-col items-center justify-center">
+			<h1 className="text-5xl font-black md:text-7xl">Worthmore:</h1>
+			<h1 className="text-center  text-5xl font-black md:text-7xl">
+				{" "}
 				Swarthmore College's
-			</Heading>
-			<Heading size={{ base: "3xl", md: "4xl" }} color="green.500">
+			</h1>
+			<h1 className="text-5xl font-black text-emerald-600 md:text-7xl ">
 				Free Store
-			</Heading>
-			<Box mt="20px">
-				<Text align="center" fontSize="2xl">
-					Explore the items donated by Swarthmore students, all for $0
-				</Text>
-			</Box>
+			</h1>
+			<div className="mt-2 text-center text-2xl font-medium">
+				Explore the items donated by Swarthmore students, all for $0
+			</div>
 			<RouterLink to="/store">
-				<Button size="lg" colorScheme="green" mt="20px">
+				<Button
+					size="lg"
+					className="mt-5 bg-green-600 text-lg hover:bg-green-700"
+				>
 					See the Store
 				</Button>
 			</RouterLink>
-			<Box mt="20px">
-				<Text align="center" fontSize="2xl">
+			<div className="mt-4">
+				<div className="text-center text-2xl font-medium">
 					Wednesday: 7 - 9 pm
-				</Text>
-				<Text align="center" fontSize="2xl">
+				</div>
+				<div className="text-center text-2xl font-medium">
 					Saturday: 1 - 3 pm
-				</Text>
-				<Text align="center" fontSize="2xl">
-					Located in Willet's Basement
-				</Text>
-			</Box>
-		</Flex>
+				</div>
+				<div className="text-center text-2xl font-medium">
+					Located in Willets Hall Basement
+				</div>
+			</div>
+		</div>
 	);
 }
 
