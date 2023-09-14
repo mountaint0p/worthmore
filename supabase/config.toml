@@ -63,8 +63,8 @@ enable_confirmations = false
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
 [auth.external.google]
 enabled = true
-client_id = "522122481512-p2m6d3eo1hab71kfi6ai89c1bq2m7mcn.apps.googleusercontent.com"
-secret = "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"
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_OAUTH_KEY)"
 # Overrides the default auth redirectUrl.
 redirect_uri = ""
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
